@@ -1,6 +1,4 @@
-﻿using System.Text.Json.Serialization;
-
-namespace server.Models;
+﻿namespace server.Models;
 
 public record Auteur
 {
@@ -13,10 +11,5 @@ public record Auteur
     Id = id;
     Nom = nom;
     Prenom = prenom;
-  }
-
-  public Auteur()
-  {
-    throw new NotImplementedException();
   }
 }
