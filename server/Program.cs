@@ -1,5 +1,6 @@
 using server.Models;
 using server.Services;
+using server.utils;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -14,7 +15,7 @@ builder.Services.AddCors(options =>
       });
 });
 
-builder.Services.AddControllers();
+builder.Services.AddControllers().AddJsonOptions( options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -24,6 +25,7 @@ builder.Services.Configure<DbConnection>(builder.Configuration.GetSection("DbCon
 
 // Add Services
 builder.Services.AddScoped<IAuteurService, AuteurService>();
+builder.Services.AddScoped<ILivreService, LivreService>();
 
 var app = builder.Build();
 

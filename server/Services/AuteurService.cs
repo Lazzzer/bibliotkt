@@ -13,7 +13,7 @@ public class AuteurService : IAuteurService
         new NpgsqlConnection(options.Value.ConnectionString);
   }
 
-  private static Auteur PopulateAuteurRecord(NpgsqlDataReader reader)
+  public static Auteur PopulateAuteurRecord(NpgsqlDataReader reader)
   {
     if (reader == null) throw new ArgumentNullException(nameof(reader));
 
@@ -81,6 +81,35 @@ public class AuteurService : IAuteurService
     }
     _connection.Close();
     return auteur;
+  }
+
+  public Auteur? GetAuteurByIdWithLivres(int id)
+  {
+    Auteur? auteur = null;
+    var livres = new List<Livre>();
+    _connection.Open();
+    using (var command = _connection.CreateCommand())
+    {
+      command.CommandText = "SELECT * FROM Auteur LEFT JOIN Livre_Auteur ON Auteur.id = Livre_Auteur.idAuteur LEFT JOIN Livre ON Livre_Auteur.ISSNLivre = Livre.ISSN WHERE Auteur.id = @id";
+      command.Parameters.AddWithValue("id", id);
+
+      using (var reader = command.ExecuteReader())
+      {
+        while (reader.Read())
+        {
+          auteur = PopulateAuteurRecord(reader);
+          if (!reader.IsDBNull(reader.GetOrdinal("issnlivre")))
+          {
+            livres.Add(LivreService.PopulateLivreRecord(reader));
+          }
+        }
+      }
+      if (auteur != null && livres.Count > 0)
+      {
+        return auteur with {Livres = livres};
+      }
+      return auteur;
+    }
   }
 
   public IList<Auteur> GetAuteursByNames(string? nom, string? prenom)

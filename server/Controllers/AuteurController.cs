@@ -32,7 +32,7 @@ public class AuteurController : ControllerBase
   [Consumes("application/json")]
   public ActionResult GetAuteurById(int id)
   {
-    var auteur = _service.GetAuteurById(id);
+    var auteur = _service.GetAuteurByIdWithLivres(id);
     if (auteur == null)
       return NotFound();
 
