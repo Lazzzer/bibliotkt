@@ -17,13 +17,9 @@ public class LivreService : ILivreService
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-        var issn = reader.GetInt32(reader.GetOrdinal("issnlivre"));
+        var issn = reader.GetInt32(reader.GetOrdinal("issn"));
         var titre = reader.GetString(reader.GetOrdinal("titre"));
-        string? synospis = null;
-        if (!reader.IsDBNull(reader.GetOrdinal("synopsis")))
-        { 
-            synospis = reader.GetString(reader.GetOrdinal("synopsis"));
-        }
+        var synospis = reader.GetString(reader.GetOrdinal("synopsis"));
         var dateParution = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("dateParution"));
         var dateAcquisition = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("dateAcquisition"));
         var prixAchat = reader.GetInt32(reader.GetOrdinal("prixAchat"));

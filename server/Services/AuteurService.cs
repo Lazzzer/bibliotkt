@@ -98,7 +98,7 @@ public class AuteurService : IAuteurService
         while (reader.Read())
         {
           auteur = PopulateAuteurRecord(reader);
-          if (!reader.IsDBNull(reader.GetOrdinal("issnlivre")))
+          if (!reader.IsDBNull(reader.GetOrdinal("issn")))
           {
             livres.Add(LivreService.PopulateLivreRecord(reader));
           }
