@@ -1,6 +1,5 @@
-using server.Models;
 using server.Services;
-using server.utils;
+using server.Utils;
 
 var builder = WebApplication.CreateBuilder(args);
 

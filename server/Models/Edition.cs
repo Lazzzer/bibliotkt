@@ -28,4 +28,4 @@ public enum Langue
     Francais
 }
 
-public record Edition(int Id, int IssnLivre, int IdMaisonEdition, TypeEdition Type, Langue Langue);
+public record Edition(int Id, Livre Livre, MaisonEdition MaisonEdition, TypeEdition Type, Langue Langue, List<Exemplaire> Exemplaires);

@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Npgsql;
 using server.Models;
+using server.Utils;
 
 namespace server.Services;
 
@@ -21,7 +22,7 @@ public class AuteurService : IAuteurService
     var nom = reader.GetString(reader.GetOrdinal("nom"));
     var prenom = reader.GetString(reader.GetOrdinal("prénom"));
 
-    return new Auteur(auteurId, nom, prenom);
+    return new Auteur(auteurId, nom, prenom, new List<Livre>());
   }
 
   public IList<Auteur> GetAuteurs(int? limit, int? offset)

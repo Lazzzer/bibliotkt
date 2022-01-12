@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Options;
 using Npgsql;
 using server.Models;
+using server.Utils;
 
 namespace server.Services;
 
@@ -25,6 +26,6 @@ public class LivreService : ILivreService
         var prixAchat = reader.GetInt32(reader.GetOrdinal("prixAchat"));
         var prixEmprunt = reader.GetInt32(reader.GetOrdinal("prixEmprunt"));
         
-        return new Livre(issn, titre, synospis, dateParution, dateAcquisition, prixAchat, prixEmprunt);
+        return new Livre(issn, titre, synospis, dateParution, dateAcquisition, prixAchat, prixEmprunt, new List<Auteur>(), new List<Categorie>());
     }
 }
