@@ -9,6 +9,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.4.2",
+    "@heroicons/vue": "^1.0.5",
+    "@vueuse/core": "^7.5.3",
+    "@vueuse/head": "^0.7.4",
     "axios": "^0.24.0",
     "pinia": "^2.0.9",
     "vue": "^3.2.26",

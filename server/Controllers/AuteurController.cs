@@ -44,7 +44,6 @@ public class AuteurController : ControllerBase
   [Consumes("application/json")]
   public ActionResult CreateAuteur(Auteur auteur)
   {
-    var returnValue = _service.Insert(auteur);
     return Created("Created", new { Id = _service.Insert(auteur) });
   }
 

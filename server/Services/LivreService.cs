@@ -28,4 +28,39 @@ public class LivreService : ILivreService
         
         return new Livre(issn, titre, synospis, dateParution, dateAcquisition, prixAchat, prixEmprunt, new List<Auteur>(), new List<Categorie>());
     }
+
+    public IList<Livre> GetLivres(int? limit, int? offset)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Livre? GetLivreByIssn(int issn)
+    {
+        throw new NotImplementedException();
+    }
+
+    public Livre? GetLivreByIssnWithAuteurs(int issn)
+    {
+        throw new NotImplementedException();
+    }
+
+    public IList<Livre> GetLivresByTitle(string? title, string? prenom)
+    {
+        throw new NotImplementedException();
+    }
+
+    public int Insert(Livre auteur)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Update(Livre auteur)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Delete(Livre auteur)
+    {
+        throw new NotImplementedException();
+    }
 }
