@@ -9,6 +9,6 @@ public interface IAuteurService
   Auteur? GetAuteurByIdWithLivres(int id);
   IList<Auteur> GetAuteursByNames(string? nom, string? prenom);
   int Insert(Auteur auteur);
-  void Update(Auteur auteur);
-  void Delete(Auteur auteur);
+  int Update(Auteur auteur);
+  int Delete(Auteur auteur);
 }

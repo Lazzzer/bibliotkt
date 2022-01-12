@@ -45,6 +45,29 @@ public class AuteurController : ControllerBase
   public ActionResult CreateAuteur(Auteur auteur)
   {
     var returnValue = _service.Insert(auteur);
-    return Created("test", new { Id = returnValue });
+    return Created("Created", new { Id = _service.Insert(auteur) });
+  }
+
+  [HttpPut]
+  [Produces("application/json")]
+  [Consumes("application/json")]
+  public ActionResult UpdateAuteur(Auteur auteur)
+  {
+    var fetchedAuteur = _service.GetAuteurById(auteur.Id);
+    if (fetchedAuteur == null)
+      return NotFound();
+
+    return Accepted("Updated", new { AffectedRow = _service.Update(auteur) });
+  }
+  [HttpDelete]
+  [Produces("application/json")]
+  [Consumes("application/json")]
+  public ActionResult DeleteAuteur(Auteur auteur)
+  {
+    var fetchedAuteur = _service.GetAuteurById(auteur.Id);
+    if (fetchedAuteur == null)
+      return NotFound();
+
+    return Accepted("Deleted", new { AffectedRow = _service.Delete(auteur) });
   }
 }

@@ -134,13 +134,37 @@ public class AuteurService : IAuteurService
     return id;
   }
 
-  public void Update(Auteur auteur)
+  public int Update(Auteur auteur)
   {
-    throw new NotImplementedException();
+    int affectedRows;
+    
+    _connection.Open();
+    using (var command = _connection.CreateCommand())
+    {
+      command.CommandText = "UPDATE Auteur SET nom = @nom, prénom = @prenom WHERE id = @id";
+      command.Parameters.AddWithValue("@id", auteur.Id);
+      command.Parameters.AddWithValue("@nom", auteur.Nom);
+      command.Parameters.AddWithValue("prenom", auteur.Prenom);
+      affectedRows = command.ExecuteNonQuery();
+    }
+    _connection.Close();
+    
+    return affectedRows;
   }
 
-  public void Delete(Auteur auteur)
+  public int Delete(Auteur auteur)
   {
-    throw new NotImplementedException();
+    int affectedRows;
+    
+    _connection.Open();
+    using (var command = _connection.CreateCommand())
+    {
+      command.CommandText = "DELETE FROM Auteur WHERE id = @id";
+      command.Parameters.AddWithValue("@id", auteur.Id);
+      affectedRows = command.ExecuteNonQuery();
+    }
+    _connection.Close();
+    
+    return affectedRows;
   }
 }
