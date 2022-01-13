@@ -92,12 +92,12 @@ public class LivreService : ILivreService
                 while (reader.Read())
                 {
                     livre = PopulateLivreRecord(reader);
-                    if (!reader.IsDBNull(reader.GetOrdinal("idauteur")))
+                    if (!reader.IsDBNull(reader.GetOrdinal("idauteur")) && !auteurs.Exists(a => a.Id == reader.GetInt32(reader.GetOrdinal("idauteur"))))
                     {
                         auteurs.Add(AuteurService.PopulateAuteurRecord(reader, "idauteur"));
                     }
 
-                    if (!reader.IsDBNull(reader.GetOrdinal("nomcatégorie")))
+                    if (!reader.IsDBNull(reader.GetOrdinal("nomcatégorie")) && !categories.Exists(c => c.Nom == reader.GetString(reader.GetOrdinal("nomcatégorie"))))
                     {
                         categories.Add(CategorieService.PopulateCategorieRecord(reader, "nomcatégorie"));
                     }
