@@ -14,11 +14,11 @@ public class AuteurService : IAuteurService
         new NpgsqlConnection(options.Value.ConnectionString);
   }
 
-  public static Auteur PopulateAuteurRecord(NpgsqlDataReader reader)
+  public static Auteur PopulateAuteurRecord(NpgsqlDataReader reader, string key = "id")
   {
     if (reader == null) throw new ArgumentNullException(nameof(reader));
 
-    var auteurId = reader.GetInt32(reader.GetOrdinal("id"));
+    var auteurId = reader.GetInt32(reader.GetOrdinal(key));
     var nom = reader.GetString(reader.GetOrdinal("nom"));
     var prenom = reader.GetString(reader.GetOrdinal("prénom"));
 

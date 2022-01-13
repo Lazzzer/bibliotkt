@@ -4,9 +4,9 @@ namespace server.Services;
 
 public interface ILivreService
 {
-    IList<Livre> GetLivres(int? limit, int? offset);
+    IList<Livre> GetLivres();
     Livre? GetLivreByIssn(int issn);
-    Livre? GetLivreByIssnWithAuteurs(int issn);
+    Livre? GetLivreByIssnWithAuteursEtCategories(int issn);
     IList<Livre> GetLivresByTitle(string? title, string? prenom);
     int Insert(Livre auteur);
     void Update(Livre auteur);

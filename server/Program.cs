@@ -25,6 +25,7 @@ builder.Services.Configure<DbConnection>(builder.Configuration.GetSection("DbCon
 // Add Services
 builder.Services.AddScoped<IAuteurService, AuteurService>();
 builder.Services.AddScoped<ILivreService, LivreService>();
+builder.Services.AddScoped<ICategorieService, CategorieService>();
 
 var app = builder.Build();
 
