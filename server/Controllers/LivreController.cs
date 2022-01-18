@@ -1,4 +1,4 @@
-﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc;
 using server.Services;
 
 namespace server.Controllers;
@@ -14,6 +14,7 @@ public class LivreController : ControllerBase
         _service = service;
     }
 
+    [Route("livres")]
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
@@ -37,5 +38,14 @@ public class LivreController : ControllerBase
             return NotFound();
 
         return Ok(livre);
+    }
+    
+    [Route("filtres")]
+    [HttpGet]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult GetLivreWithFilters(string? nomAuteur, string? langue, [FromQuery] string[]? nomCategories)
+    {
+        return Ok();
     }
 }
