@@ -1,3 +1,3 @@
 ﻿namespace server.Models;
 
-public record EtatUsure(string Nom, List<Emprunt> Emprunts);
+public record EtatUsure(string Nom);

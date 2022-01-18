@@ -26,6 +26,7 @@ builder.Services.Configure<DbConnection>(builder.Configuration.GetSection("DbCon
 builder.Services.AddScoped<IAuteurService, AuteurService>();
 builder.Services.AddScoped<ILivreService, LivreService>();
 builder.Services.AddScoped<ICategorieService, CategorieService>();
+builder.Services.AddScoped<IEtatUsureService, EtatUsureService>();
 
 var app = builder.Build();
 

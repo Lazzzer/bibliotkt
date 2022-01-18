@@ -5,29 +5,29 @@ using server.Utils;
 
 namespace server.Services;
 
-public class CategorieService : ICategorieService
+public class EtatUsureService : IEtatUsureService
 {
     private static NpgsqlConnection _connection = new();
 
-    public CategorieService(IOptions<DbConnection> options)
+    public EtatUsureService(IOptions<DbConnection> options)
     {
         _connection =
             new NpgsqlConnection(options.Value.ConnectionString);
     }
 
-    public static Categorie PopulateCategorieRecord(NpgsqlDataReader reader, string key = "nom")
+    public static EtatUsure PopulateEtatUsureRecord(NpgsqlDataReader reader, string key = "nom")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
         
         var nom = reader.GetString(reader.GetOrdinal(key));
 
-        return new Categorie(nom, new List<Livre>());
+        return new EtatUsure(nom);
     }
-
-    public IList<Categorie> GetCategories()
+    
+    public IList<EtatUsure> GetCategories()
     {
-        var list = new List<Categorie>();
-        var query = "SELECT * FROM Categorie";
+        var list = new List<EtatUsure>();
+        var query = "SELECT * FROM EtatUsure";
         
         _connection.Open();
         using (var command = _connection.CreateCommand())
@@ -38,7 +38,7 @@ public class CategorieService : ICategorieService
             {
                 while (reader.Read())
                 {
-                    list.Add(PopulateCategorieRecord(reader));
+                    list.Add(PopulateEtatUsureRecord(reader));
                 }
             }
         }
@@ -47,10 +47,10 @@ public class CategorieService : ICategorieService
         return list;
     }
 
-    public Categorie? GetCategorieByNom(string nom)
+    public EtatUsure? GetCategorieByNom(string nom)
     {
-        Categorie? cat = null;
-        var query = "SELECT * FROM Categorie WHERE nom = @nom";
+        EtatUsure? etat = null;
+        var query = "SELECT * FROM EtatUsure WHERE nom = @nom";
         
         _connection.Open();
         using (var command = _connection.CreateCommand())
@@ -62,16 +62,16 @@ public class CategorieService : ICategorieService
             {
                 while (reader.Read())
                 {
-                    cat = PopulateCategorieRecord(reader);
+                    etat = PopulateEtatUsureRecord(reader);
                 }
             }
         }
         _connection.Close();
 
-        return cat;
+        return etat;
     }
-    
-    public string? Insert(Categorie categorie)
+
+    public string? Insert(EtatUsure etat)
     {
         string? nom = null;
         
@@ -79,13 +79,13 @@ public class CategorieService : ICategorieService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO Catégorie (nom) VALUES (@nom) returning nom";
-            command.Parameters.AddWithValue("@nom", categorie.Nom);
+            command.Parameters.AddWithValue("@nom", etat.Nom);
             nom = (string?)(command.ExecuteScalar() ?? null);
         }
         _connection.Close();
         return nom;
     }
-    
+
     public int Update(string nom, string newNom)
     {
         int affectedRows;
@@ -93,7 +93,7 @@ public class CategorieService : ICategorieService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "UPDATE Catégorie SET nom = @newNom WHERE nom = @nom";
+            command.CommandText = "UPDATE EtatUsure SET nom = @newNom WHERE nom = @nom";
             command.Parameters.AddWithValue("@newNom", newNom);
             command.Parameters.AddWithValue("@nom", nom);
             affectedRows = command.ExecuteNonQuery();
@@ -102,16 +102,16 @@ public class CategorieService : ICategorieService
     
         return affectedRows;
     }
-    
-    public int Delete(Categorie cat)
+
+    public int Delete(EtatUsure etat)
     {
         int affectedRows;
     
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "DELETE FROM Categorie WHERE nom = @nom";
-            command.Parameters.AddWithValue("@nom", cat.Nom);
+            command.CommandText = "DELETE FROM EtatUsure WHERE nom = @nom";
+            command.Parameters.AddWithValue("@nom", etat.Nom);
             affectedRows = command.ExecuteNonQuery();
         }
         _connection.Close();
