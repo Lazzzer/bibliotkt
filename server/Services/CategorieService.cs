@@ -27,12 +27,10 @@ public class CategorieService : ICategorieService
     public IList<Categorie> GetCategories()
     {
         var list = new List<Categorie>();
-        var query = "SELECT * FROM Categorie";
-        
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = query;
+            command.CommandText = "SELECT * FROM Catégorie";
 
             using (var reader = command.ExecuteReader())
             {
@@ -50,12 +48,10 @@ public class CategorieService : ICategorieService
     public Categorie? GetCategorieByNom(string nom)
     {
         Categorie? cat = null;
-        var query = "SELECT * FROM Categorie WHERE nom = @nom";
-        
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = query;
+            command.CommandText = "SELECT * FROM Catégorie WHERE nom = @nom";
             command.Parameters.AddWithValue("nom", nom);
 
             using (var reader = command.ExecuteReader())
@@ -73,7 +69,7 @@ public class CategorieService : ICategorieService
     
     public string? Insert(Categorie categorie)
     {
-        string? nom = null;
+        string? nom;
         
         _connection.Open();
         using (var command = _connection.CreateCommand())
@@ -110,7 +106,7 @@ public class CategorieService : ICategorieService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "DELETE FROM Categorie WHERE nom = @nom";
+            command.CommandText = "DELETE FROM Catégorie WHERE nom = @nom";
             command.Parameters.AddWithValue("@nom", cat.Nom);
             affectedRows = command.ExecuteNonQuery();
         }
