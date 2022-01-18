@@ -17,9 +17,9 @@ public class AuteurController : ControllerBase
   [HttpGet]
   [Produces("application/json")]
   [Consumes("application/json")]
-  public ActionResult GetAuteurs(int? limit, int? offset)
+  public ActionResult GetAuteurs()
   {
-    var list = _service.GetAuteurs(limit, offset);
+    var list = _service.GetAuteurs();
     if (list.Count == 0)
       return NotFound();
 
@@ -61,12 +61,12 @@ public class AuteurController : ControllerBase
   [HttpDelete]
   [Produces("application/json")]
   [Consumes("application/json")]
-  public ActionResult DeleteAuteur(Auteur auteur)
+  public ActionResult DeleteAuteur(int id)
   {
-    var fetchedAuteur = _service.GetAuteurById(auteur.Id);
+    var fetchedAuteur = _service.GetAuteurById(id);
     if (fetchedAuteur == null)
       return NotFound();
 
-    return Accepted("Deleted", new { AffectedRow = _service.Delete(auteur) });
+    return Accepted("Deleted", new { AffectedRow = _service.Delete(id) });
   }
 }

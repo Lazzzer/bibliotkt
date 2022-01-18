@@ -25,32 +25,13 @@ public class AuteurService : IAuteurService
     return new Auteur(auteurId, nom, prenom, new List<Livre>());
   }
 
-  public IList<Auteur> GetAuteurs(int? limit, int? offset)
+  public IList<Auteur> GetAuteurs()
   {
     var list = new List<Auteur>();
-    var query = "SELECT * FROM Auteur LIMIT @limit OFFSET @offset";
-    var hasParameters = true;
-
-    if (limit < 0 || offset < 0)
-    {
-      throw new ArgumentException("Offset or limit should be equal or higher than 0.");
-    }
-
-    if (limit == null && offset == null)
-    {
-      query = "SELECT * FROM Auteur";
-      hasParameters = false;
-    }
     _connection.Open();
     using (var command = _connection.CreateCommand())
     {
-      command.CommandText = query;
-      if (hasParameters)
-      {
-        command.Parameters.AddWithValue("@limit", limit);
-        command.Parameters.AddWithValue("@offset", offset);
-      }
-
+      command.CommandText = "SELECT * FROM Auteur";
       using (var reader = command.ExecuteReader())
       {
         while (reader.Read())
@@ -152,7 +133,7 @@ public class AuteurService : IAuteurService
     return affectedRows;
   }
 
-  public int Delete(Auteur auteur)
+  public int Delete(int id)
   {
     int affectedRows;
     
@@ -160,7 +141,7 @@ public class AuteurService : IAuteurService
     using (var command = _connection.CreateCommand())
     {
       command.CommandText = "DELETE FROM Auteur WHERE id = @id";
-      command.Parameters.AddWithValue("@id", auteur.Id);
+      command.Parameters.AddWithValue("@id", id);
       affectedRows = command.ExecuteNonQuery();
     }
     _connection.Close();
