@@ -33,7 +33,7 @@ public class LivreController : ControllerBase
     [Consumes("application/json")]
     public ActionResult GetLivreById(int issn)
     {
-        var livre = _service.GetLivreByIssnWithAuteursEtCategories(issn);
+        var livre = _service.GetLivreByIssn(issn);
         if (livre == null)
             return NotFound();
 

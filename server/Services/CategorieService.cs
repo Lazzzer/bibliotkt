@@ -21,7 +21,7 @@ public class CategorieService : ICategorieService
         
         var nom = reader.GetString(reader.GetOrdinal(key));
 
-        return new Categorie(nom, new List<Livre>());
+        return new Categorie(nom);
     }
 
     public IList<Categorie> GetCategories()

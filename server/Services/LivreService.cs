@@ -28,7 +28,7 @@ public class LivreService : ILivreService
         var prixEmprunt = reader.GetInt32(reader.GetOrdinal("prixEmprunt"));
 
         return new Livre(issn, titre, synospis, dateParution, dateAcquisition, prixAchat, prixEmprunt,
-            new List<Auteur>(), new List<Categorie>());
+            new List<Auteur>(), new List<Categorie>(), new List<Edition>());
     }
 
     public IList<Livre> GetLivres()
@@ -55,36 +55,43 @@ public class LivreService : ILivreService
     public Livre? GetLivreByIssn(int issn)
     {
         Livre? livre = null;
-        _connection.Open();
-        using (var command = _connection.CreateCommand())
-        {
-            command.CommandText = "SELECT * FROM Livre WHERE issn = @issn";
-            command.Parameters.AddWithValue("@issn", issn);
-
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    livre = PopulateLivreRecord(reader);
-                }
-            }
-        }
-
-        _connection.Close();
-        return livre;
-    }
-
-    public Livre? GetLivreByIssnWithAuteursEtCategories(int issn)
-    {
-        Livre? livre = null;
+        var idAuteurs = new List<int>();
+        var idEditions = new List<int>();
         var auteurs = new List<Auteur>();
         var categories = new List<Categorie>();
+        var editions = new List<Edition>();
 
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText =
-                "SELECT*FROM Livre LEFT JOIN Livre_Auteur ON Livre.issn = Livre_Auteur.issnlivre LEFT JOIN Auteur ON Livre_Auteur.idAuteur = Auteur.id LEFT JOIN Livre_Catégorie ON Livre.issn = Livre_Catégorie.issnLivre LEFT JOIN Catégorie ON Livre_Catégorie.nomCatégorie = Catégorie.nom WHERE Livre.issn = @issn";
+            @"SELECT
+                    issn,
+                    titre,
+                    synopsis,
+                    dateparution,
+                    dateacquisition,
+                    prixachat,
+                    prixemprunt,
+                    idauteur,
+                    auteur.nom,
+                    prénom,
+                    nomCatégorie,
+                    edition.id AS idEdition,
+                    edition.issnlivre,
+                    idmaisonedition,
+                    type,
+                    langue
+                FROM
+                    Livre
+                    LEFT JOIN Livre_Auteur ON Livre.issn = Livre_Auteur.issnlivre
+                    LEFT JOIN Auteur ON Livre_Auteur.idAuteur = Auteur.id
+                    LEFT JOIN Livre_Catégorie ON Livre.issn = Livre_Catégorie.issnLivre
+                    LEFT JOIN Catégorie ON Livre_Catégorie.nomCatégorie = Catégorie.nom
+                    LEFT JOIN edition ON Edition.issnLivre = Livre.issn
+                WHERE
+                    Livre.issn = @issn";
+            
             command.Parameters.AddWithValue("issn", issn);
 
             using (var reader = command.ExecuteReader())
@@ -101,18 +108,14 @@ public class LivreService : ILivreService
                     {
                         categories.Add(CategorieService.PopulateCategorieRecord(reader, "nomcatégorie"));
                     }
+                    
+                    if (!reader.IsDBNull(reader.GetOrdinal("idedition")) && !editions.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idedition"))))
+                    {
+                        editions.Add(EditionService.PopulateEditionRecord(reader, "idedition"));
+                    }
                 }
             }
-
-            if (livre != null && auteurs.Count > 0)
-            {
-                return livre with {Auteurs = auteurs, Categories = categories};
-            }
-
-            if (livre != null) 
-                return livre with {Categories = categories};
-
-            return livre;
+            return livre with {Auteurs = auteurs, Categories = categories, Editions = editions};
         }
     }
 

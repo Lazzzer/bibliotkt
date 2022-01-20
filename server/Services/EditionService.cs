@@ -15,15 +15,15 @@ public class EditionService : IEditionService
             new NpgsqlConnection(options.Value.ConnectionString);
     }
     
-    public static Edition PopulateEditionRecord(NpgsqlDataReader reader, string key = "nom")
+    public static Edition PopulateEditionRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 
         var id = reader.GetInt32(reader.GetOrdinal(key));
         var issn = reader.GetInt32(reader.GetOrdinal("ISSNLivre"));
         var idMaison = reader.GetInt32(reader.GetOrdinal("idMaisonEdition"));
-        var type = (TypeEdition)reader.GetValue(reader.GetOrdinal("type"));
-        var langue = (Langue)reader.GetValue(reader.GetOrdinal("langue"));
+        var type = reader.GetFieldValue<TypeEdition>(reader.GetOrdinal("type"));
+        var langue = reader.GetFieldValue<Langue>(reader.GetOrdinal("langue"));
 
         return new Edition(id,issn, idMaison, type, langue, new List<Exemplaire>());
     }
