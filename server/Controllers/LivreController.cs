@@ -59,7 +59,24 @@ public class LivreController : ControllerBase
     [Consumes("application/json")]
     public ActionResult GetLivreWithFilters(string? nomAuteur, Langue? langue, [FromQuery] string[] nomCategories)
     {
-        var list = _service.GetLivresByFilters(nomAuteur, langue, nomCategories);
+        var list = _service.GetLivresByFilters(nomAuteur, langue, nomCategories, true);
+        if (list.Count == 0)
+            return NotFound();
+
+        return Ok(list);
+    }
+    
+    [Route("/livre/recommandations")]
+    [HttpGet]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult GetLivreWithFilters(int issn, string? nomAuteur, [FromQuery] string[] nomCategories)
+    {
+        var list = _service.GetLivresByFilters(nomAuteur, null, nomCategories, false).ToList();
+
+        list.RemoveAll(l => l.Issn == issn);
+        
+        
         if (list.Count == 0)
             return NotFound();
 

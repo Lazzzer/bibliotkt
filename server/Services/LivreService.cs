@@ -141,25 +141,21 @@ public class LivreService : ILivreService
         }
     }
 
-    public IList<Livre> GetLivresByFilters(string? nomAuteur, Langue? langue, string[] nomCategories)
+    public IList<Livre> GetLivresByFilters(string? nomAuteur, Langue? langue, string[] nomCategories, bool interesct)
     {
         var list = new List<Livre>();
         var joins = "";
         var where = "";
+        var logicalOperator = interesct ? " AND " : " OR ";
         
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             if (nomAuteur != null)
             {
-                // Exemple avec seulement l'auteur
-                // SELECT * FROM Livre INNER JOIN Livre_Auteur ON Livre_Auteur.issnlivre = Livre.issn
-                // INNER JOIN Auteur ON livre_auteur.idauteur = auteur.id
-                // WHERE auteur.nom ILIKE '%Hugo%' OR auteur.prénom ILIKE '%Hugo%';
-
                 joins += " INNER JOIN Livre_Auteur ON Livre_Auteur.issnLivre = Livre.issn INNER JOIN Auteur ON Livre_auteur.idauteur = auteur.id";
                 
-                where += where == "" ? "WHERE " : " AND ";
+                where += where == "" ? "WHERE " : logicalOperator;
                 where += "(auteur.nom ILIKE @nomAuteur OR auteur.prénom ILIKE @nomAuteur)";
                 command.Parameters.AddWithValue("@nomAuteur", "%" + nomAuteur.Trim() + "%");
             }
@@ -168,7 +164,7 @@ public class LivreService : ILivreService
             {
                 joins += " INNER JOIN edition ON edition.issnlivre = livre.issn";
                 
-                where += where == "" ? "WHERE " : " AND ";
+                where += where == "" ? "WHERE " : logicalOperator;
                 where += "edition.langue = @langue";
                 command.Parameters.AddWithValue("@langue", langue.Value);
             }
@@ -178,7 +174,7 @@ public class LivreService : ILivreService
                 joins +=
                     " INNER JOIN livre_catégorie ON livre_catégorie.issnlivre = Livre.issn INNER JOIN catégorie ON livre_catégorie.nomcatégorie = catégorie.nom";
                 
-                where += where == "" ? "WHERE " : " AND ";
+                where += where == "" ? "WHERE " : logicalOperator;
                 where += "(";
                 for (var i = 0; i < nomCategories.Length; ++i)
                 {
