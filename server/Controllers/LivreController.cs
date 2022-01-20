@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using server.Models;
 using server.Services;
 
 namespace server.Controllers;
@@ -56,8 +57,12 @@ public class LivreController : ControllerBase
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public ActionResult GetLivreWithFilters(string? nomAuteur, string? langue, [FromQuery] string[]? nomCategories)
+    public ActionResult GetLivreWithFilters(string? nomAuteur, Langue? langue, [FromQuery] string[] nomCategories)
     {
-        return Ok();
+        var list = _service.GetLivresByFilters(nomAuteur, langue, nomCategories);
+        if (list.Count == 0)
+            return NotFound();
+
+        return Ok(list);
     }
 }
