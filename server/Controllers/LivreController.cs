@@ -4,7 +4,6 @@ using server.Services;
 namespace server.Controllers;
 
 [ApiController]
-[Route("livre")]
 public class LivreController : ControllerBase
 {
     private readonly ILivreService _service;
@@ -27,7 +26,7 @@ public class LivreController : ControllerBase
         return Ok(list);
     }
 
-    [Route("{issn:int}")]
+    [Route("livre/{issn:int}")]
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
@@ -40,7 +39,20 @@ public class LivreController : ControllerBase
         return Ok(livre);
     }
     
-    [Route("filtres")]
+    [Route("livresByTitle")]
+    [HttpGet]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult GetLivresByTitle(string titre)
+    {
+        var list = _service.GetLivresByTitle(titre);
+        if (list.Count == 0)
+            return NotFound();
+
+        return Ok(list);
+    }
+    
+    [Route("livresByFilters")]
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]

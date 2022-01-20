@@ -7,7 +7,8 @@ public interface ILivreService
     IList<Livre> GetLivres();
     Livre? GetLivreByIssn(int issn);
     Livre? GetLivreByIssnWithAuteursEtCategories(int issn);
-    IList<Livre> GetLivresByTitle(string? title, string? prenom);
+    IList<Livre> GetLivresByTitle(string title);
+    IList<Livre> GetLivresByFilters(string? nomAuteur, string? langue, string[]? nomCategories);
     int Insert(Livre auteur);
     void Update(Livre auteur);
     void Delete(Livre auteur);

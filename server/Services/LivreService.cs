@@ -116,7 +116,29 @@ public class LivreService : ILivreService
         }
     }
 
-    public IList<Livre> GetLivresByTitle(string? title, string? prenom)
+    public IList<Livre> GetLivresByTitle(string title)
+    {
+        var list = new List<Livre>();
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = "SELECT * FROM LIVRE WHERE titre ILIKE @text";
+            command.Parameters.AddWithValue("@text", "%" + title.Trim() + "%");
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    list.Add(PopulateLivreRecord(reader));
+                }
+            }
+
+            _connection.Close();
+            return list;
+        }
+    }
+
+    public IList<Livre> GetLivresByFilters(string? nomAuteur, string? langue, string[]? nomCategories)
     {
         throw new NotImplementedException();
     }
