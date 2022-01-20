@@ -29,6 +29,7 @@ builder.Services.AddScoped<ICategorieService, CategorieService>();
 builder.Services.AddScoped<IEtatUsureService, EtatUsureService>();
 builder.Services.AddScoped<IMaisonEditionService, MaisonEditionService>();
 builder.Services.AddScoped<IEditionService, EditionService>();
+builder.Services.AddScoped<IEmployeService, EmployeService>();
 
 var app = builder.Build();
 
