@@ -122,7 +122,7 @@ public class LivreService : ILivreService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "SELECT * FROM LIVRE WHERE titre ILIKE @text";
+            command.CommandText = "SELECT * FROM Livre WHERE titre ILIKE @text";
             command.Parameters.AddWithValue("@text", "%" + title.Trim() + "%");
 
             using (var reader = command.ExecuteReader())
@@ -138,9 +138,73 @@ public class LivreService : ILivreService
         }
     }
 
-    public IList<Livre> GetLivresByFilters(string? nomAuteur, string? langue, string[]? nomCategories)
+    public IList<Livre> GetLivresByFilters(string? nomAuteur, Langue? langue, string[] nomCategories)
     {
-        throw new NotImplementedException();
+        var list = new List<Livre>();
+        var joins = "";
+        var where = "";
+        
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            if (nomAuteur != null)
+            {
+                // Exemple avec seulement l'auteur
+                // SELECT * FROM Livre INNER JOIN Livre_Auteur ON Livre_Auteur.issnlivre = Livre.issn
+                // INNER JOIN Auteur ON livre_auteur.idauteur = auteur.id
+                // WHERE auteur.nom ILIKE '%Hugo%' OR auteur.prénom ILIKE '%Hugo%';
+
+                joins += " INNER JOIN Livre_Auteur ON Livre_Auteur.issnLivre = Livre.issn INNER JOIN Auteur ON Livre_auteur.idauteur = auteur.id";
+                
+                where += where == "" ? "WHERE " : " AND ";
+                where += "(auteur.nom ILIKE @nomAuteur OR auteur.prénom ILIKE @nomAuteur)";
+                command.Parameters.AddWithValue("@nomAuteur", "%" + nomAuteur.Trim() + "%");
+            }
+
+            if (langue != null)
+            {
+                joins += " INNER JOIN edition ON edition.issnlivre = livre.issn";
+                
+                where += where == "" ? "WHERE " : " AND ";
+                where += "edition.langue = @langue";
+                command.Parameters.AddWithValue("@langue", langue.Value);
+            }
+
+            if (nomCategories.Length > 0)
+            {
+                joins +=
+                    " INNER JOIN livre_catégorie ON livre_catégorie.issnlivre = Livre.issn INNER JOIN catégorie ON livre_catégorie.nomcatégorie = catégorie.nom";
+                
+                where += where == "" ? "WHERE " : " AND ";
+                where += "(";
+                for (var i = 0; i < nomCategories.Length; ++i)
+                {
+                    where += "catégorie.nom = @nom" + i;
+                    command.Parameters.AddWithValue("@nom" + i, nomCategories[i].Trim());
+                    if (i != nomCategories.Length - 1)
+                    {
+                        where += " OR ";
+                    }
+                }
+
+                where += ")";
+            }
+
+            var query = "SELECT DISTINCT issn, titre, synopsis, dateparution, dateacquisition, prixachat, prixemprunt FROM Livre " + joins + " " + where;
+
+            command.CommandText = query;
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    list.Add(PopulateLivreRecord(reader));
+                }
+            }
+
+            _connection.Close();
+            return list;
+        }
     }
 
     public int Insert(Livre auteur)
