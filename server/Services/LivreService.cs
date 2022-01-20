@@ -245,12 +245,26 @@ public class LivreService : ILivreService
 
     private void InsertLivreCat(string nomCat, int issnLivre)
     {
-        
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = @"INSERT INTO Livre_Catégorie(ISSNLivre, nomCatégorie) VALUES (@issn, @cat)";
+
+            command.Parameters.AddWithValue("@issn", issnLivre);
+            command.Parameters.AddWithValue("@cat", nomCat);
+        }
     }
 
     private void InsertLivreAuteur(int idAuteur, int issnLivre)
     {
-        
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = @"INSERT INTO Livre_Auteur(ISSNLivre, idAuteur) VALUES (@issn, @idAuteur)";
+
+            command.Parameters.AddWithValue("@issn", issnLivre);
+            command.Parameters.AddWithValue("@idAuteur", idAuteur);
+        }
     }
 
     public void Update(Livre livre)
