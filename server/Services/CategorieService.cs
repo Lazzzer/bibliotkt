@@ -52,7 +52,7 @@ public class CategorieService : ICategorieService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Catégorie WHERE nom = @nom";
-            command.Parameters.AddWithValue("nom", nom);
+            command.Parameters.AddWithValue("@nom", nom);
 
             using (var reader = command.ExecuteReader())
             {

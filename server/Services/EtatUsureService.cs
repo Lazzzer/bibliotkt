@@ -56,7 +56,7 @@ public class EtatUsureService : IEtatUsureService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = query;
-            command.Parameters.AddWithValue("nom", nom);
+            command.Parameters.AddWithValue("@nom", nom);
 
             using (var reader = command.ExecuteReader())
             {

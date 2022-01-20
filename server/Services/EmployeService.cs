@@ -40,7 +40,7 @@ public class EmployeService : IEmployeService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Edition WHERE login = @login";
-            command.Parameters.AddWithValue("login", login);
+            command.Parameters.AddWithValue("@login", login);
 
             using (var reader = command.ExecuteReader())
             {
@@ -62,7 +62,7 @@ public class EmployeService : IEmployeService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Edition WHERE id = @id";
-            command.Parameters.AddWithValue("id", id);
+            command.Parameters.AddWithValue("@id", id);
 
             using (var reader = command.ExecuteReader())
             {

@@ -100,7 +100,7 @@ public class EditionService : IEditionService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Edition WHERE idMaisonEdition = @idMaison";
-            command.Parameters.AddWithValue("idMaison", idMaison);
+            command.Parameters.AddWithValue("@idMaison", idMaison);
 
             using (var reader = command.ExecuteReader())
             {
@@ -122,7 +122,7 @@ public class EditionService : IEditionService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Edition WHERE type = @type";
-            command.Parameters.AddWithValue("type", type);
+            command.Parameters.AddWithValue("@type", type);
 
             using (var reader = command.ExecuteReader())
             {
@@ -144,7 +144,7 @@ public class EditionService : IEditionService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Edition WHERE Langue = @langue";
-            command.Parameters.AddWithValue("langue", langue);
+            command.Parameters.AddWithValue("@langue", langue);
 
             using (var reader = command.ExecuteReader())
             {

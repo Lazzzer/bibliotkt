@@ -94,10 +94,6 @@ public class AuteurService : IAuteurService
     }
   }
 
-  public IList<Auteur> GetAuteursByNames(string? nom, string? prenom)
-  {
-    throw new NotImplementedException();
-  }
 
   public int Insert(Auteur auteur)
   {
@@ -125,7 +121,7 @@ public class AuteurService : IAuteurService
       command.CommandText = "UPDATE Auteur SET nom = @nom, prénom = @prenom WHERE id = @id";
       command.Parameters.AddWithValue("@id", auteur.Id);
       command.Parameters.AddWithValue("@nom", auteur.Nom);
-      command.Parameters.AddWithValue("prenom", auteur.Prenom);
+      command.Parameters.AddWithValue("@prenom", auteur.Prenom);
       affectedRows = command.ExecuteNonQuery();
     }
     _connection.Close();

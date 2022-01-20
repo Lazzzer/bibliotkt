@@ -1,3 +1,4 @@
+using server.Models;
 using server.Services;
 using server.Utils;
 
@@ -30,6 +31,7 @@ builder.Services.AddScoped<IEtatUsureService, EtatUsureService>();
 builder.Services.AddScoped<IMaisonEditionService, MaisonEditionService>();
 builder.Services.AddScoped<IEditionService, EditionService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
+builder.Services.AddScoped<IMembreService, MembreService>();
 
 var app = builder.Build();
 
