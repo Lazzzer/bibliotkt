@@ -1,4 +1,5 @@
-﻿using Microsoft.Extensions.Options;
+﻿using System.Data;
+using Microsoft.Extensions.Options;
 using Npgsql;
 using server.Models;
 using server.Utils;
@@ -34,7 +35,8 @@ public class LivreService : ILivreService
     public IList<Livre> GetLivres()
     {
         var list = new List<Livre>();
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Livre";
@@ -59,7 +61,8 @@ public class LivreService : ILivreService
         var categories = new List<Categorie>();
         var editions = new List<Edition>();
 
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText =
@@ -124,7 +127,8 @@ public class LivreService : ILivreService
     public IList<Livre> GetLivresByTitle(string title)
     {
         var list = new List<Livre>();
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "SELECT * FROM Livre WHERE titre ILIKE @text";
@@ -150,7 +154,8 @@ public class LivreService : ILivreService
         var where = "";
         var logicalOperator = interesct ? " AND " : " OR ";
         
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             if (nomAuteur != null)
@@ -211,7 +216,8 @@ public class LivreService : ILivreService
     public int Insert(Livre livre)
     {
         int id;
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"INSERT INTO Livre (issn, titre, synopsis, dateParution, dateAcquisition, prixAchat, prixEmprunt)
@@ -225,6 +231,7 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@achat", livre.PrixAchat);
             command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
             id = (int)(command.ExecuteScalar() ?? -1);
+            _connection.Close();
 
             foreach (var a in livre.Auteurs)
             {
@@ -235,13 +242,13 @@ public class LivreService : ILivreService
                 InsertLivreCat(c.Nom, id);
             }
         }
-
-        _connection.Close();
         return id;
     }
 
-    private static void InsertLivreCat(string nomCat, int issnLivre)
+    private void InsertLivreCat(string nomCat, int issnLivre)
     {
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"INSERT INTO Livre_Catégorie(ISSNLivre, nomCatégorie) VALUES (@issn, @cat)";
@@ -250,10 +257,13 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@cat", nomCat);
             command.ExecuteScalar();
         }
+        _connection.Close();
     }
 
-    private static void InsertLivreAuteur(int idAuteur, int issnLivre)
+    private void InsertLivreAuteur(int idAuteur, int issnLivre)
     {
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"INSERT INTO Livre_Auteur(ISSNLivre, idAuteur) VALUES (@issn, @idAuteur)";
@@ -262,12 +272,14 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@idAuteur", idAuteur);
             command.ExecuteScalar();
         }
+        _connection.Close();
     }
 
     public int Update(Livre livre)
     {
         int affectedRows;
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"UPDATE Livre 
@@ -291,7 +303,8 @@ public class LivreService : ILivreService
     {
         int affectedRows;
 
-        _connection.Open();
+        if (_connection.State != ConnectionState.Open)
+            _connection.Open(); 
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "DELETE FROM Livre WHERE ISSN = @id";
