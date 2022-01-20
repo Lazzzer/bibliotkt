@@ -161,7 +161,8 @@ public class EmpruntService : IEmpruntService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "INSERT INTO Emprunt (dateDébut, dateRetourPlanifié, dateRendu, nomEtatUsure, idExemplaire, idMembre) VALUES (@début, @planifié, @rendu, @etat, @idExemplaire, @idMembre) returning id";
+            command.CommandText = @"INSERT INTO Emprunt (dateDébut, dateRetourPlanifié, dateRendu, nomEtatUsure, 
+            idExemplaire, idMembre) VALUES (@début, @planifié, @rendu, @etat, @idExemplaire, @idMembre) returning id";
             command.Parameters.AddWithValue("@début", emprunt.DateDebut);
             command.Parameters.AddWithValue("@planifié", emprunt.DateRetourPlanifie);
             command.Parameters.AddWithValue("@rendu", emprunt.DateRendu);

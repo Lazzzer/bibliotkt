@@ -207,18 +207,77 @@ public class LivreService : ILivreService
         }
     }
 
-    public int Insert(Livre auteur)
+    public int Insert(Livre livre)
     {
-        throw new NotImplementedException();
+        int id;
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = @"INSERT INTO Livre (issn, titre, synopsis, dateParution, dateAcquisition, prixAchat, prixEmprunt)
+            VALUES (ISSN = @issn, titre = @titre, synopsis = @synopsis, dateParution = @parution, dateAcquisition = @acquisition, 
+                prixAchat = @achat, prixEmprunt = @emprunt) returning  issn";
+            
+            command.Parameters.AddWithValue("@issn", livre.Issn);
+            command.Parameters.AddWithValue("@titre", livre.Titre);
+            command.Parameters.AddWithValue("@synopsis", livre.Synopsis);
+            command.Parameters.AddWithValue("@parution", livre.DateParution);
+            command.Parameters.AddWithValue("@acquisition", livre.DateAcquisition);
+            command.Parameters.AddWithValue("@achat", livre.PrixAchat);
+            command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
+            id = (int)(command.ExecuteScalar() ?? -1);
+
+            foreach (Auteur a in livre.Auteurs)
+            {
+                InsertLivreAuteur(a.Id, id);
+            }
+            foreach (Categorie c in livre.Categories)
+            {
+                InsertLivreCat(c.Nom, id);
+            }
+        }
+
+        _connection.Close();
+        return id;
     }
 
-    public void Update(Livre auteur)
+    private void InsertLivreCat(string nomCat, int issnLivre)
     {
-        throw new NotImplementedException();
+        
     }
 
-    public void Delete(Livre auteur)
+    private void InsertLivreAuteur(int idAuteur, int issnLivre)
     {
-        throw new NotImplementedException();
+        
+    }
+
+    public void Update(Livre livre)
+    {
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = @"UPDATE Livre 
+            SET titre = @titre, synopsis = @synopsis, dateParution = @parution, dateAcquisition = @acquisition, 
+                prixAchat = @achat, prixEmprunt = @emprunt WHERE issn = @issn";
+            
+            command.Parameters.AddWithValue("@issn", livre.Issn);
+            command.Parameters.AddWithValue("@titre", livre.Titre);
+            command.Parameters.AddWithValue("@synopsis", livre.Synopsis);
+            command.Parameters.AddWithValue("@parution", livre.DateParution);
+            command.Parameters.AddWithValue("@acquisition", livre.DateAcquisition);
+            command.Parameters.AddWithValue("@achat", livre.PrixAchat);
+            command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
+        }
+        _connection.Close();
+    }
+
+    public void Delete(int id)
+    {
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = "DELETE FROM Livre WHERE ISSN = @id";
+            command.Parameters.AddWithValue("@id", id);
+        }
+        _connection.Close();
     }
 }
