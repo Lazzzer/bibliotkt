@@ -32,6 +32,7 @@ builder.Services.AddScoped<IMaisonEditionService, MaisonEditionService>();
 builder.Services.AddScoped<IEditionService, EditionService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
 builder.Services.AddScoped<IMembreService, MembreService>();
+builder.Services.AddScoped<IEmpruntService, EmpruntService>();
 
 var app = builder.Build();
 
