@@ -6,7 +6,7 @@ public interface ICategorieService
 {
     IList<Categorie> GetCategories();
     Categorie? GetCategorieByNom(string nom);
-    string? Insert(Categorie categorie);
+    string? Insert(string nom);
     int Update(string nom, string newNom);
-    int Delete(Categorie cat);
+    int Delete(string nom);
 }

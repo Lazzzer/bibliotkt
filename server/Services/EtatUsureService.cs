@@ -71,7 +71,7 @@ public class EtatUsureService : IEtatUsureService
         return etat;
     }
 
-    public string? Insert(EtatUsure etat)
+    public string? Insert(string nomId)
     {
         string? nom = null;
         
@@ -79,7 +79,7 @@ public class EtatUsureService : IEtatUsureService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO Catégorie (nom) VALUES (@nom) returning nom";
-            command.Parameters.AddWithValue("@nom", etat.Nom);
+            command.Parameters.AddWithValue("@nom", nomId);
             nom = (string?)(command.ExecuteScalar() ?? null);
         }
         _connection.Close();
@@ -103,7 +103,7 @@ public class EtatUsureService : IEtatUsureService
         return affectedRows;
     }
 
-    public int Delete(EtatUsure etat)
+    public int Delete(string nom)
     {
         int affectedRows;
     
@@ -111,7 +111,7 @@ public class EtatUsureService : IEtatUsureService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "DELETE FROM EtatUsure WHERE nom = @nom";
-            command.Parameters.AddWithValue("@nom", etat.Nom);
+            command.Parameters.AddWithValue("@nom", nom);
             affectedRows = command.ExecuteNonQuery();
         }
         _connection.Close();

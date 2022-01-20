@@ -67,7 +67,7 @@ public class CategorieService : ICategorieService
         return cat;
     }
     
-    public string? Insert(Categorie categorie)
+    public string? Insert(string nomId)
     {
         string? nom;
         
@@ -75,7 +75,7 @@ public class CategorieService : ICategorieService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO Catégorie (nom) VALUES (@nom) returning nom";
-            command.Parameters.AddWithValue("@nom", categorie.Nom);
+            command.Parameters.AddWithValue("@nom", nomId);
             nom = (string?)(command.ExecuteScalar() ?? null);
         }
         _connection.Close();
@@ -99,7 +99,7 @@ public class CategorieService : ICategorieService
         return affectedRows;
     }
     
-    public int Delete(Categorie cat)
+    public int Delete(string nom)
     {
         int affectedRows;
     
@@ -107,7 +107,7 @@ public class CategorieService : ICategorieService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "DELETE FROM Catégorie WHERE nom = @nom";
-            command.Parameters.AddWithValue("@nom", cat.Nom);
+            command.Parameters.AddWithValue("@nom", nom);
             affectedRows = command.ExecuteNonQuery();
         }
         _connection.Close();

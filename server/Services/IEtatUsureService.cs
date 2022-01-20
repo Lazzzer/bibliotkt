@@ -6,7 +6,7 @@ public interface IEtatUsureService
 {
     IList<EtatUsure> GetCategories();
     EtatUsure? GetCategorieByNom(string nom);
-    string? Insert(EtatUsure etat);
+    string? Insert(string nom);
     int Update(string nom, string newNom);
-    int Delete(EtatUsure etat);
+    int Delete(string nom);
 }
