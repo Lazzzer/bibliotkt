@@ -9,6 +9,6 @@ public interface ILivreService
     IList<Livre> GetLivresByTitle(string title);
     IList<Livre> GetLivresByFilters(string? nomAuteur, Langue? langue, string[] nomCategories, bool intersect);
     int Insert(Livre livre);
-    void Update(Livre livre);
-    void Delete(int id);
+    int Update(Livre livre);
+    int Delete(int id);
 }

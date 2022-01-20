@@ -19,7 +19,7 @@ public class AuteurService : IAuteurService
     if (reader == null) throw new ArgumentNullException(nameof(reader));
 
     var auteurId = reader.GetInt32(reader.GetOrdinal(key));
-    var nom = reader.GetString(reader.GetOrdinal("nom"));
+      var nom = reader.GetString(reader.GetOrdinal("nom"));
     var prenom = reader.GetString(reader.GetOrdinal("prénom"));
 
     return new Auteur(auteurId, nom, prenom, new List<Livre>());

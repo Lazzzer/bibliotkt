@@ -82,4 +82,39 @@ public class LivreController : ControllerBase
 
         return Ok(list);
     }
+    
+    [Route("livre")]
+    [HttpPost]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult CreateLivre(Livre livre)
+    {
+        return Created("Created", new { Issn = _service.Insert(livre) });
+    }
+
+    [Route("livre")]
+    [HttpPut]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult UpdateLivre(Livre livre)
+    {
+        var fetchedLivre = _service.GetLivreByIssn(livre.Issn);
+        if (fetchedLivre == null)
+            return NotFound();
+
+        return Accepted("Updated", new { AffectedRow = _service.Update(livre) });
+    }
+    
+    [Route("livre")]
+    [HttpDelete]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult DeleteLivre(int issn)
+    {
+        var fetchedLivre = _service.GetLivreByIssn(issn);
+        if (fetchedLivre == null)
+            return NotFound();
+
+        return Accepted("Deleted", new { AffectedRow = _service.Delete(issn) });
+    }
 }

@@ -55,8 +55,6 @@ public class LivreService : ILivreService
     public Livre? GetLivreByIssn(int issn)
     {
         Livre? livre = null;
-        var idAuteurs = new List<int>();
-        var idEditions = new List<int>();
         var auteurs = new List<Auteur>();
         var categories = new List<Categorie>();
         var editions = new List<Edition>();
@@ -115,7 +113,11 @@ public class LivreService : ILivreService
                     }
                 }
             }
-            return livre with {Auteurs = auteurs, Categories = categories, Editions = editions};
+
+            if (livre != null) 
+                return livre with {Auteurs = auteurs, Categories = categories, Editions = editions};
+            
+            return null;
         }
     }
 
@@ -213,8 +215,7 @@ public class LivreService : ILivreService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"INSERT INTO Livre (issn, titre, synopsis, dateParution, dateAcquisition, prixAchat, prixEmprunt)
-            VALUES (ISSN = @issn, titre = @titre, synopsis = @synopsis, dateParution = @parution, dateAcquisition = @acquisition, 
-                prixAchat = @achat, prixEmprunt = @emprunt) returning  issn";
+            VALUES (@issn, @titre, @synopsis, @parution, @acquisition, @achat, @emprunt) returning issn";
             
             command.Parameters.AddWithValue("@issn", livre.Issn);
             command.Parameters.AddWithValue("@titre", livre.Titre);
@@ -225,11 +226,11 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
             id = (int)(command.ExecuteScalar() ?? -1);
 
-            foreach (Auteur a in livre.Auteurs)
+            foreach (var a in livre.Auteurs)
             {
                 InsertLivreAuteur(a.Id, id);
             }
-            foreach (Categorie c in livre.Categories)
+            foreach (var c in livre.Categories)
             {
                 InsertLivreCat(c.Nom, id);
             }
@@ -239,32 +240,33 @@ public class LivreService : ILivreService
         return id;
     }
 
-    private void InsertLivreCat(string nomCat, int issnLivre)
+    private static void InsertLivreCat(string nomCat, int issnLivre)
     {
-        _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"INSERT INTO Livre_Catégorie(ISSNLivre, nomCatégorie) VALUES (@issn, @cat)";
 
             command.Parameters.AddWithValue("@issn", issnLivre);
             command.Parameters.AddWithValue("@cat", nomCat);
+            command.ExecuteScalar();
         }
     }
 
-    private void InsertLivreAuteur(int idAuteur, int issnLivre)
+    private static void InsertLivreAuteur(int idAuteur, int issnLivre)
     {
-        _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"INSERT INTO Livre_Auteur(ISSNLivre, idAuteur) VALUES (@issn, @idAuteur)";
 
             command.Parameters.AddWithValue("@issn", issnLivre);
             command.Parameters.AddWithValue("@idAuteur", idAuteur);
+            command.ExecuteScalar();
         }
     }
 
-    public void Update(Livre livre)
+    public int Update(Livre livre)
     {
+        int affectedRows;
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
@@ -279,18 +281,24 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@acquisition", livre.DateAcquisition);
             command.Parameters.AddWithValue("@achat", livre.PrixAchat);
             command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
+            affectedRows = command.ExecuteNonQuery();
         }
         _connection.Close();
+        return affectedRows;
     }
 
-    public void Delete(int id)
+    public int Delete(int id)
     {
+        int affectedRows;
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "DELETE FROM Livre WHERE ISSN = @id";
             command.Parameters.AddWithValue("@id", id);
+            affectedRows = command.ExecuteNonQuery();
         }
         _connection.Close();
+        return affectedRows;
     }
 }
