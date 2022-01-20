@@ -27,6 +27,8 @@ builder.Services.AddScoped<IAuteurService, AuteurService>();
 builder.Services.AddScoped<ILivreService, LivreService>();
 builder.Services.AddScoped<ICategorieService, CategorieService>();
 builder.Services.AddScoped<IEtatUsureService, EtatUsureService>();
+builder.Services.AddScoped<IMaisonEditionService, MaisonEditionService>();
+builder.Services.AddScoped<IEditionService, EditionService>();
 
 var app = builder.Build();
 

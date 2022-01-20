@@ -2,7 +2,7 @@
 
 namespace server.Services;
 
-public interface IMaisonEdition
+public interface IMaisonEditionService
 {
     IList<MaisonEdition> GetMaisons();
     MaisonEdition? GetMaisonByNom(string nom);

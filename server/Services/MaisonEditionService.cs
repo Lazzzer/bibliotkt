@@ -5,7 +5,7 @@ using server.Utils;
 
 namespace server.Services;
 
-public class MaisonEditionService : IMaisonEdition
+public class MaisonEditionService : IMaisonEditionService
 {
     private static NpgsqlConnection _connection = new();
 
@@ -15,7 +15,7 @@ public class MaisonEditionService : IMaisonEdition
             new NpgsqlConnection(options.Value.ConnectionString);
     }
 
-    public static MaisonEdition PopulateMaisonEdition(NpgsqlDataReader reader, string key = "nom")
+    public static MaisonEdition PopulateMaisonEditionRecord(NpgsqlDataReader reader, string key = "nom")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 
@@ -43,7 +43,7 @@ public class MaisonEditionService : IMaisonEdition
             {
                 while (reader.Read())
                 {
-                    list.Add(PopulateMaisonEdition(reader));
+                    list.Add(PopulateMaisonEditionRecord(reader));
                 }
             }
         }
@@ -65,7 +65,7 @@ public class MaisonEditionService : IMaisonEdition
             {
                 while (reader.Read())
                 {
-                    maison = PopulateMaisonEdition(reader);
+                    maison = PopulateMaisonEditionRecord(reader);
                 }
             }
         }
@@ -87,7 +87,7 @@ public class MaisonEditionService : IMaisonEdition
             {
                 while (reader.Read())
                 {
-                    maison = PopulateMaisonEdition(reader);
+                    maison = PopulateMaisonEditionRecord(reader);
                 }
             }
         }
