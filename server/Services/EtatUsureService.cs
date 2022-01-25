@@ -24,7 +24,7 @@ public class EtatUsureService : IEtatUsureService
         return new EtatUsure(nom);
     }
     
-    public IList<EtatUsure> GetCategories()
+    public IList<EtatUsure> GetEtatsUsure()
     {
         var list = new List<EtatUsure>();
         var query = "SELECT * FROM EtatUsure";
@@ -47,7 +47,7 @@ public class EtatUsureService : IEtatUsureService
         return list;
     }
 
-    public EtatUsure? GetCategorieByNom(string nom)
+    public EtatUsure? GetEtatUsureByNom(string nom)
     {
         EtatUsure? etat = null;
         var query = "SELECT * FROM EtatUsure WHERE nom = @nom";
@@ -78,7 +78,7 @@ public class EtatUsureService : IEtatUsureService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "INSERT INTO Catégorie (nom) VALUES (@nom) returning nom";
+            command.CommandText = "INSERT INTO EtatUsure (nom) VALUES (@nom) returning nom";
             command.Parameters.AddWithValue("@nom", nomId);
             nom = (string?)(command.ExecuteScalar() ?? null);
         }
