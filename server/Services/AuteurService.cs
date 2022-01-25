@@ -86,12 +86,13 @@ public class AuteurService : IAuteurService
           }
         }
       }
-      if (auteur != null && livres.Count > 0)
-      {
-        return auteur with {Livres = livres};
-      }
-      return auteur;
     }
+    _connection.Close();
+    if (auteur != null && livres.Count > 0)
+    {
+      return auteur with {Livres = livres};
+    }
+    return auteur;
   }
 
 

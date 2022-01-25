@@ -4,7 +4,6 @@ using server.Services;
 
 namespace server.Controllers;
 [ApiController]
-[Route("auteur")]
 public class AuteurController : ControllerBase
 {
   private readonly IAuteurService _service;
@@ -14,6 +13,7 @@ public class AuteurController : ControllerBase
     _service = service;
   }
 
+  [Route("auteurs")]
   [HttpGet]
   [Produces("application/json")]
   [Consumes("application/json")]
@@ -26,7 +26,7 @@ public class AuteurController : ControllerBase
     return Ok(list);
   }
 
-  [Route("{id:int}")]
+  [Route("auteur/{id:int}")]
   [HttpGet]
   [Produces("application/json")]
   [Consumes("application/json")]
@@ -39,6 +39,7 @@ public class AuteurController : ControllerBase
     return Ok(auteur);
   }
 
+  [Route("auteur")]
   [HttpPost]
   [Produces("application/json")]
   [Consumes("application/json")]
@@ -47,6 +48,7 @@ public class AuteurController : ControllerBase
     return Created("Created", new { Id = _service.Insert(auteur) });
   }
 
+  [Route("auteur")]
   [HttpPut]
   [Produces("application/json")]
   [Consumes("application/json")]
@@ -58,6 +60,8 @@ public class AuteurController : ControllerBase
 
     return Accepted("Updated", new { AffectedRow = _service.Update(auteur) });
   }
+  
+  [Route("auteur")]
   [HttpDelete]
   [Produces("application/json")]
   [Consumes("application/json")]

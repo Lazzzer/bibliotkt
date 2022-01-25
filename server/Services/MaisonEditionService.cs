@@ -15,7 +15,7 @@ public class MaisonEditionService : IMaisonEditionService
             new NpgsqlConnection(options.Value.ConnectionString);
     }
 
-    public static MaisonEdition PopulateMaisonEditionRecord(NpgsqlDataReader reader, string key = "nom")
+    public static MaisonEdition PopulateMaisonEditionRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 
@@ -52,35 +52,22 @@ public class MaisonEditionService : IMaisonEditionService
         return list;
     }
 
-    public MaisonEdition? GetMaisonByNom(string nom)
-    {
-        MaisonEdition? maison = null;
-        _connection.Open();
-        using (var command = _connection.CreateCommand())
-        {
-            command.CommandText = "SELECT * FROM MaisonEdition WHERE nom = @nom";
-            command.Parameters.AddWithValue("nom", nom);
-
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    maison = PopulateMaisonEditionRecord(reader);
-                }
-            }
-        }
-        _connection.Close();
-
-        return maison;
-    }
-
     public MaisonEdition? GetMaisonById(int id)
     {
         MaisonEdition? maison = null;
+        var editions = new List<Edition>();
+        
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "SELECT * FROM MaisonEdition WHERE id = @id";
+            command.CommandText = @"SELECT
+                                        *,
+                                        edition.id AS idEdition
+                                    FROM
+                                        MaisonEdition
+                                        LEFT JOIN Edition ON maisonedition.id = edition.idmaisonedition
+                                    WHERE
+                                    maisonedition.id = @id";
             command.Parameters.AddWithValue("id", id);
 
             using (var reader = command.ExecuteReader())
@@ -88,22 +75,29 @@ public class MaisonEditionService : IMaisonEditionService
                 while (reader.Read())
                 {
                     maison = PopulateMaisonEditionRecord(reader);
+                    if (!reader.IsDBNull(reader.GetOrdinal("idedition")) && !editions.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idedition"))))
+                    {
+                        editions.Add(EditionService.PopulateEditionRecord(reader, "idedition"));
+                    }
                 }
             }
         }
         _connection.Close();
 
-        return maison;
+        if (maison != null)
+            return maison with {Editions = editions};
+        
+        return null;
     }
 
-    public int? Insert(MaisonEdition maison)
+    public int Insert(MaisonEdition maison)
     {
-        int? id = null;
+        int id;
         
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "INSERT INTO MaisonEdition (nom, email, rue, noRue, npa, localité, pays) VALUES (@nom, @email, @rue, @noRue, @npa, @localité, @pays) returning id";
+            command.CommandText = "INSERT INTO MaisonEdition (nom, email, rue, noRue, npa, localité, pays) VALUES (@nom, @email, @rue, @noRue, @npa, @localite, @pays) returning id";
             command.Parameters.AddWithValue("@nom", maison.Nom);
             command.Parameters.AddWithValue("@email", maison.Email);
             command.Parameters.AddWithValue("@rue", maison.Rue);
@@ -111,7 +105,7 @@ public class MaisonEditionService : IMaisonEditionService
             command.Parameters.AddWithValue("@npa", maison.Npa);
             command.Parameters.AddWithValue("@localite", maison.Localite);
             command.Parameters.AddWithValue("@pays", maison.Pays);
-            id = (int?)(command.ExecuteScalar() ?? null);
+            id = (int)(command.ExecuteScalar() ?? -1);
         }
         _connection.Close();
         return id;
@@ -124,9 +118,10 @@ public class MaisonEditionService : IMaisonEditionService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "UPDATE MaisonEdition SET nom = @newNom, email = @email, rue = @rue, noRue = @noRue, npa = @npa, localité = @localite, pays = @pays WHERE id = @id";
+            command.CommandText = "UPDATE MaisonEdition SET nom = @nom, email = @email, rue = @rue, noRue = @noRue, npa = @npa, localité = @localite, pays = @pays WHERE id = @id";
             command.Parameters.AddWithValue("@id", maison.Id);
             command.Parameters.AddWithValue("@nom", maison.Nom);
+            command.Parameters.AddWithValue("@email", maison.Email);
             command.Parameters.AddWithValue("@rue", maison.Rue);
             command.Parameters.AddWithValue("@noRue", maison.NoRue);
             command.Parameters.AddWithValue("@npa", maison.Npa);
