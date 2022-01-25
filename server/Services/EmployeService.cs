@@ -16,7 +16,7 @@ public class EmployeService : IEmployeService
             new NpgsqlConnection(options.Value.ConnectionString);
     }
     
-    public static Employe PopulateEmployeRecord(NpgsqlDataReader reader, string key = "nom")
+    public static Employe PopulateEmployeRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 
@@ -28,10 +28,10 @@ public class EmployeService : IEmployeService
         var rue = reader.GetString(reader.GetOrdinal("rue"));
         var noRue = reader.GetInt32(reader.GetOrdinal("noRue"));
         var npa = reader.GetInt32(reader.GetOrdinal("npa"));
-        var localité = reader.GetString(reader.GetOrdinal("localité"));
-        var dateCreation = reader.GetDateTime(reader.GetOrdinal("dateCreationCompte"));
+        var localite = reader.GetString(reader.GetOrdinal("localité"));
+        var dateCreation = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("dateCreationCompte"));
 
-        return new Employe(id,nom, prénom, rue, noRue, npa, localité, new DateOnly(dateCreation.Year, dateCreation.Month, dateCreation.Day), login, mdp);
+        return new Employe(id,nom, prénom, rue, noRue, npa, localite, dateCreation, login, mdp);
     }
     
     public Employe? GetEmployeByLogin(string login)
@@ -40,7 +40,7 @@ public class EmployeService : IEmployeService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "SELECT * FROM Edition WHERE login = @login";
+            command.CommandText = "SELECT * FROM Employé INNER JOIN Personne ON employé.idpersonne = personne.id WHERE login = @login";
             command.Parameters.AddWithValue("@login", login);
 
             using (var reader = command.ExecuteReader())
@@ -62,7 +62,7 @@ public class EmployeService : IEmployeService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "SELECT * FROM Edition WHERE id = @id";
+            command.CommandText = "SELECT * FROM Employé WHERE id = @id";
             command.Parameters.AddWithValue("@id", id);
 
             using (var reader = command.ExecuteReader())

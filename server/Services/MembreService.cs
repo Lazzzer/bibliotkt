@@ -16,7 +16,7 @@ public class MembreService : IMembreService
             new NpgsqlConnection(options.Value.ConnectionString);
     }
     
-    public static Membre PopulateMembreRecord(NpgsqlDataReader reader, string key = "nom")
+    public static Membre PopulateMembreRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
 
@@ -28,9 +28,9 @@ public class MembreService : IMembreService
         var noRue = reader.GetInt32(reader.GetOrdinal("noRue"));
         var npa = reader.GetInt32(reader.GetOrdinal("npa"));
         var localité = reader.GetString(reader.GetOrdinal("localité"));
-        var dateCreation = reader.GetDateTime(reader.GetOrdinal("dateCreationCompte"));
+        var dateCreation = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("dateCreationCompte"));
 
-        return new Membre(id,nom, prénom, rue, noRue, npa, localité, new DateOnly(dateCreation.Year, dateCreation.Month, dateCreation.Day), droitEmprunt, new List<Emprunt>());
+        return new Membre(id,nom, prénom, rue, noRue, npa, localité, dateCreation, droitEmprunt, new List<Emprunt>());
     }
 
     public IList<Membre> GetMembres()
