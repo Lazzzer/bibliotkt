@@ -47,7 +47,7 @@ public class ExemplaireService : IExemplaireService
         return list;
     }
 
-    public List<Exemplaire> GetExemplaireByIssn(int issn)
+    public List<Exemplaire> GetExemplairesByIssn(int issn)
     {
         var exemplaire = new List<Exemplaire>();
         _connection.Open();
@@ -63,8 +63,29 @@ public class ExemplaireService : IExemplaireService
                 }
             }
         }
-        
         _connection.Close();
+        return exemplaire;
+    }
+    
+    public Exemplaire? GetExemplaireById(int id)
+    {
+        Exemplaire? exemplaire = null;
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = "SELECT * FROM Exemplaire where id =  @id";
+            command.Parameters.AddWithValue("@id", id);
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    exemplaire = PopulateExemplaireRecord(reader);
+                }
+            }
+        }
+        _connection.Close();
+        
         return exemplaire;
     }
 
@@ -75,7 +96,7 @@ public class ExemplaireService : IExemplaireService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = @"INSERT INTO Exemplaire (issnLivre, idEdition) VALUES (@issn, @idEdition) returning id";
+            command.CommandText = @"INSERT INTO Exemplaire (issnLivre, idEdition) VALUES (@issnLivre, @idEdition) returning id";
             command.Parameters.AddWithValue("@issnLivre", exemplaire.issnLivre);
             command.Parameters.AddWithValue("@idEdition", exemplaire.idEdition);
             id = (int)(command.ExecuteScalar() ?? -1);

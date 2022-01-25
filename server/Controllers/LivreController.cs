@@ -32,7 +32,7 @@ public class LivreController : ControllerBase
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public ActionResult GetLivreById(int issn)
+    public ActionResult GetLivreByIssn(int issn)
     {
         var livre = _service.GetLivreByIssn(issn);
         if (livre == null)
