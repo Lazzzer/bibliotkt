@@ -1,3 +1,3 @@
 ﻿namespace server.Models;
 
-public record Exemplaire(int Id, Livre Livre, Edition Edition);
+public record Exemplaire(int Id, int issnLivre, int idEdition);

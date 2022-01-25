@@ -33,6 +33,7 @@ builder.Services.AddScoped<IEditionService, EditionService>();
 builder.Services.AddScoped<IEmployeService, EmployeService>();
 builder.Services.AddScoped<IMembreService, MembreService>();
 builder.Services.AddScoped<IEmpruntService, EmpruntService>();
+builder.Services.AddScoped<IExemplaireService, ExemplaireService>();
 
 var app = builder.Build();
 
