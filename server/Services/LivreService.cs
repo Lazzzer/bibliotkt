@@ -2,6 +2,7 @@
 using Microsoft.Extensions.Options;
 using Npgsql;
 using server.Models;
+using server.Services.Interfaces;
 using server.Utils;
 
 namespace server.Services;

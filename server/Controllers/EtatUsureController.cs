@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.Services;
+using server.Services.Interfaces;
 
 namespace server.Controllers;
 
@@ -13,11 +14,11 @@ public class EtatUsureController : ControllerBase
         _service = service;
     }
     
-    [Route("etatUsure")]
+    [Route("etatsUsure")]
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public ActionResult GetEtatUsure()
+    public ActionResult GetEtatsUsure()
     {
         var list = _service.GetEtatsUsure();
         if (list.Count == 0)
@@ -32,7 +33,7 @@ public class EtatUsureController : ControllerBase
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public ActionResult GetEtatUs(string nom)
+    public ActionResult GetEtatUsureByNom(string nom)
     {
         var etatUsure = _service.GetEtatUsureByNom(nom);
         if (etatUsure == null)

@@ -1,5 +1,6 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.Services;
+using server.Services.Interfaces;
 
 namespace server.Controllers;
 
@@ -50,7 +51,7 @@ public class CategorieController : ControllerBase
         var fetchedCategorie = _service.GetCategorieByNom(nom);
         
         if (fetchedCategorie == null)
-            return Created("Created", new { Issn = _service.Insert(nom) });
+            return Created("Created", new { Id = _service.Insert(nom) });
 
         return BadRequest("Categorie already exists");
     }
