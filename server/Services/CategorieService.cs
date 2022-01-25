@@ -41,7 +41,7 @@ public class CategorieService : ICategorieService
             }
         }
         _connection.Close();
-
+        
         return list;
     }
 
@@ -63,7 +63,7 @@ public class CategorieService : ICategorieService
             }
         }
         _connection.Close();
-
+        
         return cat;
     }
     
@@ -79,6 +79,7 @@ public class CategorieService : ICategorieService
             nom = (string?)(command.ExecuteScalar() ?? null);
         }
         _connection.Close();
+        
         return nom;
     }
     
