@@ -1,5 +1,5 @@
 <template>
-  <header class="bg-blue-600">
+  <header class="bg-sky-900">
     <nav class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8" aria-label="Top">
       <div class="flex items-center justify-between w-full py-6 border-b border-blue-500 lg:border-none">
         <div class="flex items-center">
