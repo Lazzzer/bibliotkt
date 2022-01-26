@@ -39,13 +39,20 @@ public class LivreService : ILivreService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "SELECT * FROM Livre";
+            command.CommandText = "SELECT * FROM Livre LEFT JOIN livre_auteur ON livre.issn = livre_auteur.issnlivre LEFT JOIN auteur on livre_auteur.idauteur = auteur.id";
 
             using (var reader = command.ExecuteReader())
             {
                 while (reader.Read())
                 {
-                    list.Add(PopulateLivreRecord(reader));
+                    var auteurs = new List<Auteur>();
+                    if (!reader.IsDBNull(reader.GetOrdinal("idauteur")) && !auteurs.Exists(a => a.Id == reader.GetInt32(reader.GetOrdinal("idauteur"))))
+                    {
+                        auteurs.Add(AuteurService.PopulateAuteurRecord(reader, "idauteur"));
+                    }
+
+                    var livre = PopulateLivreRecord(reader);
+                    list.Add(livre with {Auteurs = auteurs});
                 }
             }
         }
