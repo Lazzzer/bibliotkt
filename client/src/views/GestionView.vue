@@ -5,6 +5,7 @@
     <MaisonEditionGrid /><br>
     <AuteurGrid /><br>
     <EmpruntGrid />
+    <BookDetail />
   </div>
 </template>
 
@@ -15,9 +16,10 @@ import CategorieGrid from "../components/global/CategorieGrid.vue";
 import MaisonEditionGrid from "../components/global/MaisonEditionGrid.vue";
 import AuteurGrid from "../components/global/AuteurGrid.vue";
 import EmpruntGrid from "../components/global/EmpruntGrid.vue";
+import BookDetail from "../components/global/BookDetail.vue";
 
 export default defineComponent({
   
-  components: { MemberGrid, CategorieGrid, MaisonEditionGrid, AuteurGrid, EmpruntGrid }
+  components: { MemberGrid, CategorieGrid, MaisonEditionGrid, AuteurGrid, EmpruntGrid, BookDetail }
 })
 </script>
