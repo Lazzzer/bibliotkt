@@ -20,7 +20,7 @@ public class EmpruntController : ControllerBase
     [Consumes("application/json")]
     public ActionResult GetEmprunts(bool retard = false)
     {
-        var list = retard ? _service.GetEmprunts() : _service.GetEmpruntsEnRetard();
+        var list = retard ? _service.GetEmpruntsEnRetard() : _service.GetEmprunts();
         if (list.Count == 0)
             return NotFound();
 

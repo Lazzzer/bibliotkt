@@ -1,45 +1,47 @@
 <template>
-    <div class="MemberGrid">        
-        <h1  class="font-bold">Membres</h1><br>
-        <table class="table-fixed">
-			<thead>
-				<tr class="text-center">
-                    <th> Id</th>
-					<th> Nom</th>
-					<th> Prénom</th>
-                    <th> Date d'inscription</th>
-                    <th> Adresse</th>
-				</tr>
-            
-			</thead>
-            <tbody>
-                <tr v-for="(membre, index) in membres" :key="index" class="text-center">
-                    <td>{{membre.id}}</td>
-                    <td>{{membre.nom}}</td>
-                    <td>{{membre.prenom}}</td>
-                    <td>{{membre.dateCreationCompte}}</td>
-                    <td>{{membre.rue + " " + membre.noRue + ", " + membre.npa + " " + membre.localite}}</td>
-                </tr>
-            </tbody>
-		</table>
-    </div>
+  <div class="mb-10 border-b border-gray-200 rounded-full BookGrid">
+    <table class="min-w-full border-2 divide-y divide-gray-200 table-fixed">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-xs font-bold tracking-wider text-left uppercase text-sky-700">ID</th>
+          <th
+            class="px-6 py-3 text-xs font-bold tracking-wider text-left uppercase text-sky-700"
+          >Nom</th>
+          <th
+            class="px-6 py-3 text-xs font-bold tracking-wider text-left uppercase text-sky-700"
+          >Prénom</th>
+          <th
+            class="px-6 py-3 text-xs font-bold tracking-wider text-left uppercase text-sky-700"
+          >Date d'inscription</th>
+          <th
+            class="px-6 py-3 text-xs font-bold tracking-wider text-left uppercase text-sky-700"
+          >Adresse</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr
+          v-for="(membre, index) in membres"
+          :key="index"
+          class="cursor-pointer hover:bg-gray-200"
+        >
+          <td class="px-6 py-2 text-sm italic text-gray-700 whitespace-nowrap">{{ membre.id }}</td>
+          <td class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap">{{ membre.nom }}</td>
+          <td class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap">{{ membre.prenom }}</td>
+          <td
+            class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap"
+          >{{ membre.dateCreationCompte }}</td>
+          <td
+            class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap"
+          >{{ membre.rue + " " + membre.noRue + ", " + membre.npa + " " + membre.localite }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
-    import axios from "axios";
-    import { onMounted, ref } from "vue";
-        
-    let membres = ref([]);
+defineProps(['membres'])
 
-    const fetchMembres = async () => {
-        axios.get('membres').then(res => {
-            membres.value = res.data;
-        }).catch(err => {
-            console.log(err.response.data);
-        })
-    }
 
-    onMounted(() => {
-        fetchMembres();
-    })
+
 </script>

@@ -1,37 +1,20 @@
 <template>
-    <div class="CategorieGrid">        
-        <h1  class="font-bold">Catégories</h1><br>
-        <table class="table-fixed">
-			<thead>
-				<tr class="text-center">
-					<th> Nom </th>
-				</tr>
-            
-			</thead>
-            <tbody>
-                <tr v-for="(cat, index) in categories" :key="index">
-                    <td class="text-center">{{cat}}</td>
-                </tr>
-            </tbody>
-		</table>
-    </div>
+  <div class="mb-10 border-b border-gray-200 rounded-full BookGrid">
+    <table class="min-w-full border-2 divide-y divide-gray-200 table-fixed">
+      <thead class="bg-gray-100">
+        <tr>
+          <th class="px-6 py-3 text-xs font-bold tracking-wider text-left uppercase text-sky-700">Nom</th>
+        </tr>
+      </thead>
+      <tbody class="bg-white divide-y divide-gray-200">
+        <tr v-for="(categorie, index) in categories" :key="index" class="cursor-pointer hover:bg-gray-200">
+          <td class="px-6 py-2 text-sm italic text-gray-700 whitespace-nowrap">{{ categorie }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
 </template>
 
 <script setup>
-    import axios from "axios";
-    import { onMounted, ref } from "vue";
-        
-    let categories = ref([]);
-
-    const fetchCat = async () => {
-        axios.get('categories').then(res => {
-            categories.value = res.data;
-        }).catch(err => {
-            console.log(err.response.data);
-        })
-    }
-
-    onMounted(() => {
-        fetchCat();
-    })
+defineProps(['categories'])
 </script>

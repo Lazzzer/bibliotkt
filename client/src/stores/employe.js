@@ -3,7 +3,7 @@ import { defineStore } from 'pinia'
 export const useEmployeStore = defineStore({
   id: 'employe',
   state: () => ({
-    logged: false
+    logged: true
   }),
   getters: {
     isLogged: (state) => state.logged
