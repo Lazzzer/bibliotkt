@@ -13,10 +13,6 @@
           <router-link to="/login" class="inline-block px-4 py-2 text-base font-medium text-white bg-blue-500 border border-transparent rounded-md hover:bg-opacity-75">Log in</router-link>
         </div>
       </div>
-      <div class="flex flex-wrap justify-center py-4 space-x-6 lg:hidden">
-        <router-link to="/" class="text-base font-medium text-white hover:text-indigo-50">Home</router-link>
-        <router-link to="/about" class="text-base font-medium text-white hover:text-indigo-50">About</router-link>
-      </div>
     </nav>
   </header>
 </template>
