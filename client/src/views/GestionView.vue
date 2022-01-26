@@ -4,6 +4,13 @@
       <h1 class="mb-4 text-2xl font-bold text-sky-800">Portail de gestion</h1>
 
       <div class="mb-10">
+        
+        <button
+          @click="setToggledValue('Livres')"
+          :class="[toggledValue === 'Livres' ? 'bg-sky-700' : 'bg-gray-400']"
+          class="p-2 mr-4 text-white rounded-md hover:bg-opacity-75"
+        >Livres</button>
+
         <button
           @click="setToggledValue('Membres')"
           :class="[toggledValue === 'Membres' ? 'bg-sky-700' : 'bg-gray-400']"
@@ -15,19 +22,19 @@
           :class="[toggledValue === 'Catégories' ? 'bg-sky-700' : 'bg-gray-400']"
           class="p-2 mr-4 text-white rounded-md hover:bg-opacity-75"
         >Catégories</button>
-       
+
         <button
           @click="setToggledValue('Maisons')"
           :class="[toggledValue === 'Maisons' ? 'bg-sky-700' : 'bg-gray-400']"
           class="p-2 mr-4 text-white rounded-md hover:bg-opacity-75"
         >Maisons d'édition</button>
-        
+
         <button
           @click="setToggledValue('Auteurs')"
           :class="[toggledValue === 'Auteurs' ? 'bg-sky-700' : 'bg-gray-400']"
           class="p-2 mr-4 text-white rounded-md hover:bg-opacity-75"
         >Auteurs</button>
-        
+
         <button
           @click="setToggledValue('Emprunts')"
           :class="[toggledValue === 'Emprunts' ? 'bg-sky-700' : 'bg-gray-400']"
@@ -35,23 +42,23 @@
         >Emprunts</button>
       </div>
 
+      <BookGrid v-if="toggledValue === 'Livres'" :livres="livres" />
       <MemberGrid v-if="toggledValue === 'Membres'" :membres="membres" />
       <CategorieGrid v-if="toggledValue === 'Catégories'" :categories="categories" />
       <MaisonEditionGrid v-if="toggledValue === 'Maisons'" :maisons="maisons" />
       <AuteurGrid v-if="toggledValue === 'Auteurs'" :auteurs="auteurs" />
       <EmpruntGrid v-if="toggledValue === 'Emprunts'" :emprunts="emprunts" />
-      <!-- <BookDetail /> -->
     </div>
   </div>
 </template>
 
 <script setup>
+import BookGrid from "../components/global/BookGrid.vue";
 import MemberGrid from "../components/global/memberGrid.vue";
 import CategorieGrid from "../components/global/CategorieGrid.vue";
 import MaisonEditionGrid from "../components/global/MaisonEditionGrid.vue";
 import AuteurGrid from "../components/global/AuteurGrid.vue";
 import EmpruntGrid from "../components/global/EmpruntGrid.vue";
-import BookDetail from "../components/global/BookDetail.vue";
 import axios from "axios";
 import { onBeforeMount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
@@ -61,18 +68,26 @@ import { useEmployeStore } from "../stores/employe";
 const router = useRouter();
 const employeStore = useEmployeStore();
 
-const toggledValue = ref('Membres');
+const toggledValue = ref('Livres');
 
 const setToggledValue = (value => {
   toggledValue.value = value;
 });
 
+const livres = ref([]);
 const membres = ref([]);
 const categories = ref([]);
 const maisons = ref([]);
 const emprunts = ref([]);
 const auteurs = ref([]);
 
+const fetchLivres = async () => {
+  axios.get('livres').then(res => {
+    livres.value = res.data;
+  }).catch(err => {
+    console.log(err.response.data);
+  })
+}
 
 const fetchMembres = async () => {
   axios.get('membres').then(res => {
@@ -120,6 +135,7 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
+  fetchLivres();
   fetchMembres();
   fetchCat();
   fetchEmprunts();

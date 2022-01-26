@@ -13,7 +13,7 @@ import axios from "axios";
 import { onMounted, ref } from "vue";
 import BookGrid from "@/components/global/BookGrid.vue";
 
-let livres = ref([]);
+const livres = ref([]);
 
 const fetchLivres = async () => {
   axios.get('livres').then(res => {

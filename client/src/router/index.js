@@ -25,7 +25,11 @@ const router = createRouter({
       path: '/gestion',
       name: 'gestion',
       component: () => import('../views/GestionView.vue')
-    }
+    },
+    {
+      path: "/:catchAll(.*)",
+      component: () => import('../views/NotFoundView.vue')
+    },
 
   ]
 })
