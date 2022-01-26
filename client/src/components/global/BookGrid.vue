@@ -20,7 +20,5 @@
 </template>
 
 <script setup>
-defineProps({
-  livres: []
-})
+defineProps(['livres'])
 </script>

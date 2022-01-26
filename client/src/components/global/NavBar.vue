@@ -1,9 +1,9 @@
 <template>
   <header class="bg-sky-900">
     <nav class="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8" aria-label="Top">
-      <div class="flex items-center justify-between w-full py-6 border-b border-blue-500 lg:border-none">
+      <div class="flex items-center justify-between w-full py-6 border-b border-blue-500">
         <div class="flex items-center">
-          <div class="hidden ml-10 space-x-8 lg:block">
+          <div class="block ml-10 space-x-8">
             <router-link to="/" class="text-base font-medium text-white hover:text-blue-50">Home</router-link>
             <router-link to="/search" class="text-base font-medium text-white hover:text-blue-50">Search</router-link>
             <router-link to="/gestion" class="text-base font-medium text-white hover:text-blue-50">Gestion</router-link>
