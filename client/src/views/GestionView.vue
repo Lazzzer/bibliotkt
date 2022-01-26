@@ -9,8 +9,10 @@
   </div>
 </template>
 
-<script>
-import { defineComponent } from "vue";
+<script setup>
+import { onBeforeMount } from "vue";
+import { useRouter } from "vue-router";
+import { useEmployeStore } from "../stores/employe";
 import MemberGrid from "../components/global/memberGrid.vue";
 import CategorieGrid from "../components/global/CategorieGrid.vue";
 import MaisonEditionGrid from "../components/global/MaisonEditionGrid.vue";
@@ -18,8 +20,13 @@ import AuteurGrid from "../components/global/AuteurGrid.vue";
 import EmpruntGrid from "../components/global/EmpruntGrid.vue";
 import BookDetail from "../components/global/BookDetail.vue";
 
-export default defineComponent({
-  
-  components: { MemberGrid, CategorieGrid, MaisonEditionGrid, AuteurGrid, EmpruntGrid, BookDetail }
+
+const router = useRouter();
+const employeStore = useEmployeStore();
+
+onBeforeMount(() => {
+  if (!employeStore.isLogged)
+    router.push('/login');
 })
+
 </script>

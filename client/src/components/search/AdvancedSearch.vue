@@ -23,18 +23,18 @@
       v-for="(categorie, index) in categories"
       :key="index"
       @click="selectedCategorie.includes(categories[index]) ? removeCategorie(index) : addCategorie(index)"
-      :class="[selectedCategorie.includes(categories[index]) ? 'bg-sky-700 text-gray-200' : 'bg-sky-200 text-gray-800', 'cursor-pointer inline-flex items-center px-3 py-0.5 rounded-md mr-1 mt-2 text-sm font-medium']"
+      :class="[selectedCategorie.includes(categories[index]) ? 'bg-sky-700 text-white' : 'bg-sky-200 text-gray-800', 'cursor-pointer inline-flex items-center px-3 py-0.5 rounded-md mr-1 mt-2 text-sm font-medium hover:bg-opacity-75']"
     >{{ categorie }}</span>
   </div>
 
   <button
     @click="fetchLivresWithFilters"
-    class="p-2 my-4 text-sm text-white rounded-md bg-sky-700"
+    class="p-2 my-4 text-sm text-white rounded-md bg-sky-700 hover:bg-opacity-75"
   >Appliquer</button>
 
     <button
     @click="resetFilters"
-    class="p-2 my-4 ml-4 text-sm text-white bg-gray-600 rounded-md"
+    class="p-2 my-4 ml-4 text-sm text-white bg-gray-600 rounded-md hover:bg-opacity-75"
   >Réinitialiser</button>
 
   <BookGrid v-if="livres.length > 0 && !fetchErr" :livres="livres" />

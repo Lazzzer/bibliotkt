@@ -7,13 +7,13 @@
         <button
           @click="changeAdvanced(false)"
           :class="[advanced ? 'bg-gray-400' : 'bg-sky-700']"
-          class="p-2 mr-8 text-white rounded-md"
+          class="p-2 mr-8 text-white rounded-md hover:bg-opacity-75"
         >Recherche simple</button>
 
         <button
           @click="changeAdvanced(true)"
           :class="[!advanced ? 'bg-gray-400' : 'bg-sky-700']"
-          class="p-2 text-white rounded-md"
+          class="p-2 text-white rounded-md hover:bg-opacity-75"
         >Recherche avancée</button>
       </div>
 

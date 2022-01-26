@@ -1,5 +1,5 @@
 <template>
-  <div class="border-b border-gray-200 rounded-full BookGrid">
+  <div class="mb-10 border-b border-gray-200 rounded-full BookGrid">
     <table class="min-w-full border-2 divide-y divide-gray-200 table-fixed">
       <thead class="bg-gray-100">
         <tr>

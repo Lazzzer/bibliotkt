@@ -7,7 +7,7 @@
   />
   <button
     @click="fetchLivresByTitle"
-    class="p-2 my-4 text-sm text-white rounded-md bg-sky-700"
+    class="p-2 my-4 text-sm text-white rounded-md bg-sky-700 hover:bg-opacity-75"
   >Appliquer</button>
 
   <BookGrid v-if="livres.length > 0 && !fetchErr" :livres="livres" />
