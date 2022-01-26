@@ -1,17 +1,6 @@
-<template>
-  <div class="bg-blue-400">
-    <Navbar />
-    <router-view />
-  </div>
-</template>
-
-<script>
-import { defineComponent } from 'vue'
+<script setup>
 import { useHead } from '@vueuse/head'
 import Navbar from './components/global/Navbar.vue'
-
-export default defineComponent({
-  setup() {
     useHead({
       title: "Bibliotkt",
       link: [
@@ -21,7 +10,11 @@ export default defineComponent({
         }
       ]
     });
-  },
-  components: { Navbar }
-})
 </script>
+
+<template>
+  <div class="bg-blue-400">
+    <Navbar />
+    <router-view />
+  </div>
+</template>
