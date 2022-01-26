@@ -71,7 +71,7 @@ public class LivreController : ControllerBase
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public ActionResult GetLivreWithFilters(int issn, string? nomAuteur, [FromQuery] string[] nomCategories)
+    public ActionResult GetRecommandation(int issn, string? nomAuteur, [FromQuery] string[] nomCategories)
     {
         var list = _service.GetLivresByFilters(nomAuteur, null, nomCategories, false).ToList();
 
