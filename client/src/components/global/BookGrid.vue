@@ -9,11 +9,13 @@
         </tr>
       </thead>
       <tbody class="bg-white divide-y divide-gray-200">
-        <tr v-for="(livre, index) in livres" :key="index" class="cursor-pointer hover:bg-gray-200">
-          <td class="px-6 py-2 text-sm italic text-gray-700 whitespace-nowrap">{{ livre.issn }}</td>
-          <td class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap">{{ livre.titre }}</td>
-          <td class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap">{{ livre.dateParution }}</td>
-        </tr>
+        <router-link v-for="(livre, index) in livres" :key="index" :to="{name: 'livre', params: {issn: livre.issn }}" custom v-slot="{navigate}">
+          <tr @click="navigate" class="cursor-pointer hover:bg-gray-200">
+            <td class="px-6 py-2 text-sm italic text-gray-700 whitespace-nowrap">{{ livre.issn }}</td>
+            <td class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap">{{ livre.titre }}</td>
+            <td class="px-6 py-2 text-sm text-gray-700 whitespace-nowrap">{{ livre.dateParution }}</td>
+          </tr>
+        </router-link>
       </tbody>
     </table>
   </div>

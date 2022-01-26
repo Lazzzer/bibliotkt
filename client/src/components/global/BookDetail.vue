@@ -17,7 +17,7 @@
 <script setup>
     import axios from "axios";
     import { onMounted, ref } from "vue";
-import BookGrid from "./BookGrid.vue";
+    import BookGrid from "./BookGrid.vue";
         
     let livre = ref([]);
     let recommendations = ref([]);
@@ -32,7 +32,7 @@ import BookGrid from "./BookGrid.vue";
 
     const fetchRecommendations = async (issn, auteur) => {
         console.log
-        axios.get('livre/recommendations',  {params: { issn: 12345678, auteur: "Tolkien"}}).then(res => {
+        axios.get('livre/recommendations',  {params: { issn: issn, auteur: auteur}}).then(res => {
             recommendations.value = res.data;
         }).catch(err => {
             console.log(err.response.data);
@@ -40,6 +40,6 @@ import BookGrid from "./BookGrid.vue";
     }
     onMounted(() => {
         fetchLivre();
-        fetchRecommendations();
+        fetchRecommendations(livre.value.issn, livre.value.auteurs[0]);
     })
 </script>

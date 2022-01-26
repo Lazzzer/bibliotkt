@@ -27,6 +27,11 @@ const router = createRouter({
       component: () => import('../views/GestionView.vue')
     },
     {
+      path: '/livre/:issn',
+      name: 'livre',
+      component: () => import('../views/BookView.vue')
+    },
+    {
       path: "/:catchAll(.*)",
       component: () => import('../views/NotFoundView.vue')
     },
