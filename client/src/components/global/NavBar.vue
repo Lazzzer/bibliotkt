@@ -6,6 +6,7 @@
           <div class="hidden ml-10 space-x-8 lg:block">
             <router-link to="/" class="text-base font-medium text-white hover:text-blue-50">Home</router-link>
             <router-link to="/search" class="text-base font-medium text-white hover:text-blue-50">Search</router-link>
+            <router-link to="/gestion" class="text-base font-medium text-white hover:text-blue-50">Gestion</router-link>
           </div>
         </div>
         <div class="ml-10 space-x-4">
