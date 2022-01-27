@@ -1,45 +1,100 @@
 <template>
-    <div class="BookDetail">        
-        <p class="font-bold">Titre: </p><p>{{livre.titre}}</p><br>
-        <p class="font-bold">Genre: </p><p v-for="(cat, index) in livre.categories" :key="index" >{{cat.nom}} </p><br>
-        <p class="font-bold">Auteur: </p><p v-for="(auteur, index) in livre.auteurs" :key="index" >{{auteur.nom}} </p><br>
-        <p class="font-bold">Synopsis: </p><p>{{livre.synopsis}}</p><br>
-        <p class="font-bold">Date de parution: </p><p>{{livre.dateParution}}</p><br>
-        <p class="font-bold">Date d'acquisition: </p><p>{{livre.dateAcquisition}}</p><br>
-        <p class="font-bold">Prix d'achat: </p><p>{{livre.prixAchat}} CHF</p><br>
-        <p class="font-bold">Prix d'emprunt: </p><p>{{livre.prixEmprunt}} CHF</p><br><br>
-
-        <h1 class="font-bold">Recommendations</h1><br>
-        <BookGrid :livres="recommendations"/>
+  <div class="BookDetail">
+    <div class="mb-4">
+      <h2 class="text-2xl font-bold text-sky-700">{{ livre.titre }}</h2>
     </div>
+    <div class="mb-4">
+      <h2 class="font-bold text-sky-700">ISSN:</h2>
+      <p>{{ livre.issn }}</p>
+    </div>
+    <div class="mb-4">
+      <h2 class="font-bold text-sky-700">Catégories:</h2>
+      <p v-for="(cat, index) in livre.categories" :key="index">{{ cat.nom }}</p>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="font-bold text-sky-700">Auteurs:</h2>
+      <p v-for="(auteur, index) in livre.auteurs" :key="index">{{ auteur.nom }}</p>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="font-bold text-sky-700">Synopsis:</h2>
+      <p>{{ livre.synopsis }}</p>
+    </div>
+
+    <div class="mb-4">
+      <h2 class="font-bold text-sky-700">Date de parution:</h2>
+      <p>{{ livre.dateParution }}</p>
+    </div>
+
+    <div v-if="employeStore.isLogged" class="mb-4">
+      <h2 class="font-bold text-sky-700">Date d'acquisition:</h2>
+      <p>{{ livre.dateAcquisition }}</p>
+    </div>
+
+    <div v-if="employeStore.isLogged" class="mb-4">
+      <h2 class="font-bold text-sky-700">Prix d'achat:</h2>
+      <p>{{ livre.prixAchat }} CHF</p>
+    </div>
+
+    <div v-if="employeStore.isLogged" class="mb-4">
+      <h2 class="font-bold text-sky-700">Prix d'emprunt:</h2>
+      <p>{{ livre.prixEmprunt }} CHF</p>
+    </div>
+
+    <h1 class="mb-4 text-xl font-bold text-sky-700">Recommendations</h1>
+    <BookGrid :livres="recommandations" />
+  </div>
 </template>
 
 <script setup>
-    import axios from "axios";
-    import { onMounted, ref } from "vue";
-    import BookGrid from "./BookGrid.vue";
-        
-    let livre = ref([]);
-    let recommendations = ref([]);
+import BookGrid from "./BookGrid.vue";
+import axios from "axios";
+import { onBeforeMount, ref } from "vue";
+import { useEmployeStore } from '../../stores/employe';
+const employeStore = useEmployeStore();
 
-    const fetchLivre = async () => {
-        axios.get('livre/12345678').then(res => {
-            livre.value = res.data;
-        }).catch(err => {
-            console.log(err.response.data);
-        })
-    }
+const livre = ref([]);
+const recommandations = ref([]);
+const props = defineProps(['issn']);
 
-    const fetchRecommendations = async (issn, auteur) => {
-        console.log
-        axios.get('livre/recommendations',  {params: { issn: issn, auteur: auteur}}).then(res => {
-            recommendations.value = res.data;
-        }).catch(err => {
-            console.log(err.response.data);
-        })
-    }
-    onMounted(() => {
-        fetchLivre();
-        fetchRecommendations(livre.value.issn, livre.value.auteurs[0]);
-    })
+const fetchLivre = async () => {
+  axios.get(`livre/${props.issn}`).then(res => {
+    livre.value = res.data;
+    fetchRecommandations();
+  }).catch(err => {
+    console.log(err.response.data);
+  })
+}
+
+const fetchRecommandations = async () => {
+
+  let queryString = "";
+  let connector = "?";
+
+  if (livre.value.auteurs.length !== "") {
+    queryString += `${connector}nomAuteur=${livre.value.auteurs[0].nom}`;
+    connector = "&";
+  }
+
+  if (livre.value.categories.length > 0) {
+    livre.value.categories.forEach(categorie => {
+      queryString += `${connector}nomCategories=${categorie}`
+      connector = "&";
+    });
+  }
+
+  axios.get(`livre/recommandations${queryString}`).then(res => {
+    console.log(res)
+    recommandations.value = res.data;
+    console.log(recommandations.value, livre.value)
+  }).catch(err => {
+    console.log(err.response.data);
+  })
+}
+
+onBeforeMount(() => {
+  fetchLivre();
+})
+
 </script>
