@@ -5,16 +5,27 @@ using server.Services.Interfaces;
 using server.Utils;
 
 namespace server.Services;
+
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les emprunts.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class EmpruntService : IEmpruntService
 {
     private static NpgsqlConnection _connection = new();
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public EmpruntService(IOptions<DbConnection> options)
     {
-        _connection =
-            new NpgsqlConnection(options.Value.ConnectionString);
+        _connection = new NpgsqlConnection(options.Value.ConnectionString);
     }
 
+    /// <summary>
+    /// Crée un record Emprunt champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static Emprunt PopulateEmpruntRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -26,6 +37,7 @@ public class EmpruntService : IEmpruntService
         DateOnly? dateRendu = null;
         if (!reader.IsDBNull(reader.GetOrdinal("dateRendu")))
             dateRendu = reader.GetFieldValue<DateOnly>(reader.GetOrdinal("dateRendu"));
+
         var etat = reader.GetString(reader.GetOrdinal("nomEtatUsure"));
         var idExemplaire = reader.GetInt32(reader.GetOrdinal("idExemplaire"));
         var idMembre = reader.GetInt32(reader.GetOrdinal("idMembre"));
@@ -48,7 +60,7 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return list;
     }
@@ -69,7 +81,7 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
@@ -90,7 +102,7 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
@@ -111,11 +123,11 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
-    
+
     public IList<Emprunt> GetEmpruntsByIssn(int issn)
     {
         IList<Emprunt> emprunt = new List<Emprunt>();
@@ -123,20 +135,20 @@ public class EmpruntService : IEmpruntService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"SELECT
-                                        emprunt.id,
-                                        datedébut,
-                                        dateretourplanifié,
-                                        daterendu,
-                                        nometatusure,
-                                        idexemplaire,
-                                        idmembre,
+                                        Emprunt.id,
+                                        dateDébut,
+                                        dateRetourPlanifié,
+                                        dateRendu,
+                                        nomEtatusure,
+                                        idExemplaire,
+                                        idMembre,
                                         issn
                                     FROM
                                         Emprunt
-                                        INNER JOIN exemplaire ON emprunt.idexemplaire = exemplaire.id
-                                        INNER JOIN livre ON exemplaire.issnlivre = livre.issn
+                                        INNER JOIN Exemplaire ON Emprunt.idExemplaire = Exemplaire.id
+                                        INNER JOIN Livre ON Exemplaire.issnLivre = Livre.issn
                                     WHERE
-                                        livre.issn = @issn";
+                                        Livre.issn = @issn";
             command.Parameters.AddWithValue("@issn", issn);
             using (var reader = command.ExecuteReader())
             {
@@ -146,6 +158,7 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
+
         _connection.Close();
         return emprunt;
     }
@@ -165,11 +178,11 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
-    
+
     public IList<Emprunt> GetEmpruntsActuelsEnRetard()
     {
         IList<Emprunt> emprunt = new List<Emprunt>();
@@ -185,7 +198,7 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
@@ -196,8 +209,9 @@ public class EmpruntService : IEmpruntService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = @"SELECT * FROM Emprunt WHERE ((dateRendu IS NULL 
-            AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
+            command.CommandText = @"SELECT * FROM Emprunt 
+                                    WHERE ((dateRendu IS NULL 
+                                        AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
             using (var reader = command.ExecuteReader())
             {
                 while (reader.Read())
@@ -206,18 +220,20 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
+
     public IList<Emprunt> GetEmpruntsEnRetardByIdMembre(int id)
     {
         IList<Emprunt> emprunt = new List<Emprunt>();
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = @"SELECT * FROM Emprunt WHERE idMembre = @id AND ((dateRendu IS NULL 
-            AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
+            command.CommandText = @"SELECT * FROM Emprunt 
+                                    WHERE idMembre = @id AND ((dateRendu IS NULL 
+                                        AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
             command.Parameters.AddWithValue("@id", id);
             using (var reader = command.ExecuteReader())
             {
@@ -227,19 +243,21 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
-    
+
     public IList<Emprunt> GetEmpruntsEnRetardByIdExemplaire(int id)
     {
         IList<Emprunt> emprunt = new List<Emprunt>();
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = @"SELECT * FROM Emprunt WHERE idExemplaire = @id AND ((dateRendu IS NULL 
-            AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
+            command.CommandText = @"SELECT * FROM Emprunt 
+                                    WHERE idExemplaire = @id 
+                                      AND ((dateRendu IS NULL AND CURRENT_DATE > dateRetourPlanifié) 
+                                            OR dateRendu > dateRetourPlanifié)";
             command.Parameters.AddWithValue("@id", id);
             using (var reader = command.ExecuteReader())
             {
@@ -249,11 +267,11 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
-        
+
         _connection.Close();
         return emprunt;
     }
-    
+
     public IList<Emprunt> GetEmpruntsEnRetardByIssn(int issn)
     {
         IList<Emprunt> emprunt = new List<Emprunt>();
@@ -261,22 +279,21 @@ public class EmpruntService : IEmpruntService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"SELECT
-                                        emprunt.id,
-                                        datedébut,
-                                        dateretourplanifié,
-                                        daterendu,
-                                        nometatusure,
-                                        idexemplaire,
-                                        idmembre,
+                                        Emprunt.id,
+                                        dateDébut,
+                                        dateRetourPlanifié,
+                                        dateRendu,
+                                        nomEtatUsure,
+                                        idExemplaire,
+                                        idMembre,
                                         issn
                                     FROM
                                         Emprunt
-                                        INNER JOIN exemplaire ON emprunt.idexemplaire = exemplaire.id
-                                        INNER JOIN livre ON exemplaire.issnlivre = livre.issn
-                                    WHERE
-                                        livre.issn = @issn
-                                        AND ((dateRendu IS NULL 
-                                        AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
+                                        INNER JOIN Exemplaire ON Emprunt.idExemplaire = Exemplaire.id
+                                        INNER JOIN Livre ON Exemplaire.issnLivre = Livre.issn
+                                    WHERE Livre.issn = @issn
+                                        AND ((dateRendu IS NULL AND CURRENT_DATE > dateRetourPlanifié) 
+                                                 OR dateRendu > dateRetourPlanifié)";
             command.Parameters.AddWithValue("@issn", issn);
             using (var reader = command.ExecuteReader())
             {
@@ -286,6 +303,7 @@ public class EmpruntService : IEmpruntService
                 }
             }
         }
+
         _connection.Close();
         return emprunt;
     }
@@ -298,15 +316,16 @@ public class EmpruntService : IEmpruntService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = @"INSERT INTO Emprunt (dateDébut, dateRetourPlanifié, dateRendu, nomEtatUsure, 
-            idExemplaire, idMembre) VALUES (@début, @planifie, NULL, @etat, @idExemplaire, @idMembre) returning id";
+            command.CommandText = @"INSERT INTO Emprunt (dateDébut, dateRetourPlanifié, dateRendu, nomEtatUsure, idExemplaire, idMembre) 
+                                                VALUES (@début, @planifie, NULL, @etat, @idExemplaire, @idMembre) returning id";
             command.Parameters.AddWithValue("@début", emprunt.DateDebut);
             command.Parameters.AddWithValue("@planifie", emprunt.DateRetourPlanifie);
             command.Parameters.AddWithValue("@etat", emprunt.EtatUsure);
             command.Parameters.AddWithValue("@idExemplaire", emprunt.idExemplaire);
             command.Parameters.AddWithValue("@idMembre", emprunt.idMembre);
-            id = (int)(command.ExecuteScalar() ?? -1);
+            id = (int) (command.ExecuteScalar() ?? -1);
         }
+
         _connection.Close();
         return id;
     }
@@ -314,17 +333,18 @@ public class EmpruntService : IEmpruntService
     public int Update(Emprunt emprunt)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             var renduValeur = "";
             if (emprunt.DateRendu != null)
                 renduValeur = "dateRendu = @rendu,";
-            command.CommandText = @"UPDATE Emprunt 
-            SET dateDébut = @début, dateRetourPlanifié = @planifie," + renduValeur + @" nomEtatUsure = @etat, idExemplaire = @idExemplaire, idMembre = @idMembre
-            WHERE id = @id";
             
+            command.CommandText = @"UPDATE Emprunt SET dateDébut = @début, dateRetourPlanifié = @planifie," + renduValeur +
+                                  @" nomEtatUsure = @etat, idExemplaire = @idExemplaire, idMembre = @idMembre
+                                    WHERE id = @id";
+
             command.Parameters.AddWithValue("@id", emprunt.Id);
             command.Parameters.AddWithValue("@début", emprunt.DateDebut);
             command.Parameters.AddWithValue("@planifie", emprunt.DateRetourPlanifie);
@@ -334,15 +354,16 @@ public class EmpruntService : IEmpruntService
             command.Parameters.AddWithValue("@idMembre", emprunt.idMembre);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 
     public int Delete(int id)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
@@ -350,8 +371,9 @@ public class EmpruntService : IEmpruntService
             command.Parameters.AddWithValue("@id", id);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 }

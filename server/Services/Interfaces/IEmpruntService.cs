@@ -1,9 +1,10 @@
-﻿/**
- * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table emprunt
- */
-using server.Models;
+﻿using server.Models;
 
 namespace server.Services.Interfaces;
+
+/// <summary>
+/// Interface des méthodes du service pour les emprunts
+/// </summary>
 public interface IEmpruntService
 {
     IList<Emprunt> GetEmprunts();
@@ -18,6 +19,6 @@ public interface IEmpruntService
     IList<Emprunt> GetEmpruntsEnRetardByIdExemplaire(int id);
     IList<Emprunt> GetEmpruntsEnRetardByIssn(int issn);
     int Insert(Emprunt emprunt);
-    int Update(Emprunt auteur);
+    int Update(Emprunt emprunt);
     int Delete(int id);
 }
