@@ -1,9 +1,12 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using server.Models;
-using server.Services;
 using server.Services.Interfaces;
 
 namespace server.Controllers;
+
+/// <summary>
+/// Controller des endpoints traitant des auteurs
+/// </summary>
 [ApiController]
 public class AuteurController : ControllerBase
 {
@@ -14,6 +17,10 @@ public class AuteurController : ControllerBase
     _service = service;
   }
 
+
+  /// <remarks>
+  /// Retourne tous les auteurs
+  /// </remarks>
   [Route("auteurs")]
   [HttpGet]
   [Produces("application/json")]
@@ -27,6 +34,10 @@ public class AuteurController : ControllerBase
     return Ok(list);
   }
 
+
+  /// <remarks>
+  /// Retourne l'auteur avec ses livres
+  /// </remarks>
   [Route("auteur/{id:int}")]
   [HttpGet]
   [Produces("application/json")]
@@ -39,7 +50,18 @@ public class AuteurController : ControllerBase
 
     return Ok(auteur);
   }
-
+  
+  /// <remarks>
+  /// Crée un auteur et retourne son id
+  ///
+  ///     POST /auteur
+  /// 
+  ///     {
+  ///        "nom": "Doe",
+  ///        "prenom": "John"
+  ///     }
+  ///
+  /// </remarks>
   [Route("auteur")]
   [HttpPost]
   [Produces("application/json")]
@@ -49,6 +71,19 @@ public class AuteurController : ControllerBase
     return Created("Created", new { Id = _service.Insert(auteur) });
   }
 
+
+  /// <remarks>
+  /// Modifie un auteur et retourne 1 si la modification s'est effectuée
+  ///
+  ///     PUT /auteur
+  /// 
+  ///     {
+  ///        "id": 7,
+  ///        "nom": "Doe",
+  ///        "prenom": "Jeanne"
+  ///     }
+  ///
+  /// </remarks>
   [Route("auteur")]
   [HttpPut]
   [Produces("application/json")]
@@ -61,7 +96,10 @@ public class AuteurController : ControllerBase
 
     return Accepted("Updated", new { AffectedRow = _service.Update(auteur) });
   }
-  
+
+  /// <remarks>
+  /// Supprime un auteur et retourne 1 si la suppression s'est effectuée
+  /// </remarks>
   [Route("auteur")]
   [HttpDelete]
   [Produces("application/json")]

@@ -1,3 +1,6 @@
+using System.Reflection;
+using System.Text.Json.Serialization;
+using Microsoft.OpenApi.Models;
 using server.Models;
 using server.Services;
 using server.Services.Interfaces;
@@ -16,10 +19,25 @@ builder.Services.AddCors(options =>
       });
 });
 
-builder.Services.AddControllers().AddJsonOptions( options => options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter()));
+builder.Services.AddControllers().AddJsonOptions( options =>
+{
+  options.JsonSerializerOptions.Converters.Add(new DateOnlyJsonConverter());
+  options.JsonSerializerOptions.DefaultIgnoreCondition = JsonIgnoreCondition.WhenWritingNull;
+});
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+  options.SwaggerDoc("v1", new OpenApiInfo
+  {
+    Version = "v1",
+    Title = "BiblioTkt API",
+    Description = "Une API pour l'application web BiblioTkt dans le cadre du cours de BDR"
+  });
+  
+  var xmlFilename = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+  options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFilename));
+});
 
 // Add Connection string for all services
 builder.Services.Configure<DbConnection>(builder.Configuration.GetSection("DbConnection"));
