@@ -66,7 +66,29 @@ public class ExemplaireService : IExemplaireService
         _connection.Close();
         return exemplaire;
     }
-    
+
+    public int GetNbExemplaires(int issn)
+    {
+        int nbExemplaire = 0;
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = "SELECT COUNT(*) AS nbExemplaires FROM Exemplaire WHERE issnLivre = @issnLivre";
+            command.Parameters.AddWithValue("@issnLivre", issn);
+
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    nbExemplaire = reader.GetInt32(reader.GetOrdinal("nbExemplaires"));;
+                }
+            }
+        }
+        _connection.Close();
+        
+        return nbExemplaire;
+    }
+
     public Exemplaire? GetExemplaireById(int id)
     {
         Exemplaire? exemplaire = null;

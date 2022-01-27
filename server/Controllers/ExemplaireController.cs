@@ -53,6 +53,17 @@ public class ExemplaireController : ControllerBase
         return Ok(exemplaire);
     }
     
+    [Route("nbExemplaires/{issn:int}")]
+    [HttpGet]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult GetNbExemplaires(int issn)
+    {
+        var exemplaire = _service.GetNbExemplaires(issn);
+
+        return Ok(exemplaire);
+    }
+    
     [Route("exemplaire")]
     [HttpPost]
     [Produces("application/json")]
