@@ -6,16 +6,26 @@ using server.Utils;
 
 namespace server.Services;
 
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les maisons d'éditions.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class MaisonEditionService : IMaisonEditionService
 {
-    private static NpgsqlConnection _connection = new();
+    private static NpgsqlConnection _connection;
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public MaisonEditionService(IOptions<DbConnection> options)
     {
-        _connection =
-            new NpgsqlConnection(options.Value.ConnectionString);
+        _connection = new NpgsqlConnection(options.Value.ConnectionString);
     }
 
+    /// <summary>
+    /// Crée un record MaisonEdition champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static MaisonEdition PopulateMaisonEditionRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -29,9 +39,9 @@ public class MaisonEditionService : IMaisonEditionService
         var localite = reader.GetString(reader.GetOrdinal("localité"));
         var pays = reader.GetString(reader.GetOrdinal("pays"));
 
-        return new MaisonEdition(id,nom,email,rue,noRue,npa,localite,pays, new List<Edition>());
+        return new MaisonEdition(id, nom, email, rue, noRue, npa, localite, pays);
     }
-    
+
     public IList<MaisonEdition> GetMaisons()
     {
         var list = new List<MaisonEdition>();
@@ -48,6 +58,7 @@ public class MaisonEditionService : IMaisonEditionService
                 }
             }
         }
+
         _connection.Close();
 
         return list;
@@ -57,18 +68,17 @@ public class MaisonEditionService : IMaisonEditionService
     {
         MaisonEdition? maison = null;
         var editions = new List<Edition>();
-        
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = @"SELECT
                                         *,
-                                        edition.id AS idEdition
+                                        Edition.id AS idEdition
                                     FROM
                                         MaisonEdition
-                                        LEFT JOIN Edition ON maisonedition.id = edition.idmaisonedition
-                                    WHERE
-                                    maisonedition.id = @id";
+                                        LEFT JOIN Edition ON MaisonEdition.id = Edition.idMaisonEdition
+                                    WHERE MaisonEdition.id = @id";
             command.Parameters.AddWithValue("id", id);
 
             using (var reader = command.ExecuteReader())
@@ -76,29 +86,32 @@ public class MaisonEditionService : IMaisonEditionService
                 while (reader.Read())
                 {
                     maison = PopulateMaisonEditionRecord(reader);
-                    if (!reader.IsDBNull(reader.GetOrdinal("idedition")) && !editions.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idedition"))))
+                    if (!reader.IsDBNull(reader.GetOrdinal("idedition")) &&
+                        !editions.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idedition"))))
                     {
                         editions.Add(EditionService.PopulateEditionRecord(reader, "idedition"));
                     }
                 }
             }
         }
+
         _connection.Close();
 
         if (maison != null)
             return maison with {Editions = editions};
-        
+
         return null;
     }
 
     public int Insert(MaisonEdition maison)
     {
         int id;
-        
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "INSERT INTO MaisonEdition (nom, email, rue, noRue, npa, localité, pays) VALUES (@nom, @email, @rue, @noRue, @npa, @localite, @pays) returning id";
+            command.CommandText =
+                "INSERT INTO MaisonEdition (nom, email, rue, noRue, npa, localité, pays) VALUES (@nom, @email, @rue, @noRue, @npa, @localite, @pays) returning id";
             command.Parameters.AddWithValue("@nom", maison.Nom);
             command.Parameters.AddWithValue("@email", maison.Email);
             command.Parameters.AddWithValue("@rue", maison.Rue);
@@ -106,8 +119,9 @@ public class MaisonEditionService : IMaisonEditionService
             command.Parameters.AddWithValue("@npa", maison.Npa);
             command.Parameters.AddWithValue("@localite", maison.Localite);
             command.Parameters.AddWithValue("@pays", maison.Pays);
-            id = (int)(command.ExecuteScalar() ?? -1);
+            id = (int) (command.ExecuteScalar() ?? -1);
         }
+
         _connection.Close();
         return id;
     }
@@ -115,11 +129,12 @@ public class MaisonEditionService : IMaisonEditionService
     public int Update(MaisonEdition maison)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "UPDATE MaisonEdition SET nom = @nom, email = @email, rue = @rue, noRue = @noRue, npa = @npa, localité = @localite, pays = @pays WHERE id = @id";
+            command.CommandText =
+                "UPDATE MaisonEdition SET nom = @nom, email = @email, rue = @rue, noRue = @noRue, npa = @npa, localité = @localite, pays = @pays WHERE id = @id";
             command.Parameters.AddWithValue("@id", maison.Id);
             command.Parameters.AddWithValue("@nom", maison.Nom);
             command.Parameters.AddWithValue("@email", maison.Email);
@@ -130,15 +145,16 @@ public class MaisonEditionService : IMaisonEditionService
             command.Parameters.AddWithValue("@pays", maison.Pays);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 
     public int Delete(int id)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
@@ -146,8 +162,9 @@ public class MaisonEditionService : IMaisonEditionService
             command.Parameters.AddWithValue("@id", id);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 }

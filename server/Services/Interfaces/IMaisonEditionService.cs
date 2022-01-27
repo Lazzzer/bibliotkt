@@ -1,10 +1,10 @@
-﻿/**
- * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table maison d'édition
- */
-using server.Models;
+﻿using server.Models;
 
 namespace server.Services.Interfaces;
 
+/// <summary>
+/// Interface des méthodes du service pour les maisons d'éditions
+/// </summary>
 public interface IMaisonEditionService
 {
     IList<MaisonEdition> GetMaisons();

@@ -73,8 +73,7 @@ public class AuteurController : ControllerBase
     {
         return Created("Created", new {Id = _service.Insert(auteur)});
     }
-
-
+    
     /// <remarks>
     /// Modifie un auteur et retourne 1 si la modification s'est effectuée
     ///
