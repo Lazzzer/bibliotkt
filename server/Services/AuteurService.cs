@@ -1,4 +1,11 @@
-﻿using Microsoft.Extensions.Options;
+﻿/**
+ * implémente les différentes reliées à la table auteur
+ *
+ * La connexion est ouverte et fermée à chaque requête
+ *
+ * Chacune des méthodes de récupération de données va peupler les records correspondants
+ */
+using Microsoft.Extensions.Options;
 using Npgsql;
 using server.Models;
 using server.Services.Interfaces;
@@ -9,12 +16,16 @@ namespace server.Services;
 public class AuteurService : IAuteurService
 {
   private static NpgsqlConnection _connection = new();
+  
   public AuteurService(IOptions<DbConnection> options)
   {
     _connection =
         new NpgsqlConnection(options.Value.ConnectionString);
   }
 
+  /**
+   * Crée un record du type auteur
+   */
   public static Auteur PopulateAuteurRecord(NpgsqlDataReader reader, string key = "id")
   {
     if (reader == null) throw new ArgumentNullException(nameof(reader));

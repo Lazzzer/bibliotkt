@@ -1,4 +1,7 @@
-﻿using server.Models;
+﻿/**
+ * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table exemplaire
+ */
+using server.Models;
 
 namespace server.Services.Interfaces;
 
