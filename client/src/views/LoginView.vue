@@ -39,7 +39,7 @@
         </div>
       </div>
 
-      <h1 v-if="failed" class="mt-4 italic text-center text-rose-600">Erreur, vous n'êtes pas connectés.</h1>
+      <h1 v-if="failed" class="mt-4 italic text-center text-rose-600">Les identifiants entrés sont incorrects.</h1>
     </div>
   </div>
 </template>
