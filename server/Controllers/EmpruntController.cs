@@ -70,11 +70,26 @@ public class EmpruntController : ControllerBase
         return Ok(list);
     }
     
+    [Route("emprunts/livre/{issn:int}")]
+    [HttpGet]
+    [Produces("application/json")]
+    [Consumes("application/json")]
+    public ActionResult GetEmpruntsByIssn(int issn, bool retard = false)
+    {
+
+        var list = retard ? _service.GetEmpruntsEnRetardByIssn(issn) : _service.GetEmpruntsByIssn(issn);
+        
+        if (list.Count == 0)
+            return NotFound();
+
+        return Ok(list);
+    }
+    
     [Route("emprunts/actuel")]
     [HttpGet]
     [Produces("application/json")]
     [Consumes("application/json")]
-    public ActionResult GetEmpruntsByidExemplaire(bool retard = false)
+    public ActionResult GetEmpruntsActuels(bool retard = false)
     {
         var list = retard ? _service.GetEmpruntsActuelsEnRetard() : _service.GetEmpruntsActuels();
         if (list.Count == 0)

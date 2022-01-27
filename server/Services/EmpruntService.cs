@@ -115,6 +115,40 @@ public class EmpruntService : IEmpruntService
         _connection.Close();
         return emprunt;
     }
+    
+    public IList<Emprunt> GetEmpruntsByIssn(int issn)
+    {
+        IList<Emprunt> emprunt = new List<Emprunt>();
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = @"SELECT
+                                        emprunt.id,
+                                        datedébut,
+                                        dateretourplanifié,
+                                        daterendu,
+                                        nometatusure,
+                                        idexemplaire,
+                                        idmembre,
+                                        issn
+                                    FROM
+                                        Emprunt
+                                        INNER JOIN exemplaire ON emprunt.idexemplaire = exemplaire.id
+                                        INNER JOIN livre ON exemplaire.issnlivre = livre.issn
+                                    WHERE
+                                        livre.issn = @issn";
+            command.Parameters.AddWithValue("@issn", issn);
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    emprunt.Add(PopulateEmpruntRecord(reader));
+                }
+            }
+        }
+        _connection.Close();
+        return emprunt;
+    }
 
     public IList<Emprunt> GetEmpruntsActuels()
     {
@@ -219,6 +253,43 @@ public class EmpruntService : IEmpruntService
         _connection.Close();
         return emprunt;
     }
+    
+    public IList<Emprunt> GetEmpruntsEnRetardByIssn(int issn)
+    {
+        IList<Emprunt> emprunt = new List<Emprunt>();
+        _connection.Open();
+        using (var command = _connection.CreateCommand())
+        {
+            command.CommandText = @"SELECT
+                                        emprunt.id,
+                                        datedébut,
+                                        dateretourplanifié,
+                                        daterendu,
+                                        nometatusure,
+                                        idexemplaire,
+                                        idmembre,
+                                        issn
+                                    FROM
+                                        Emprunt
+                                        INNER JOIN exemplaire ON emprunt.idexemplaire = exemplaire.id
+                                        INNER JOIN livre ON exemplaire.issnlivre = livre.issn
+                                    WHERE
+                                        livre.issn = @issn
+                                        AND ((dateRendu IS NULL 
+                                        AND CURRENT_DATE > dateRetourPlanifié) OR dateRendu > dateRetourPlanifié)";
+            command.Parameters.AddWithValue("@issn", issn);
+            using (var reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    emprunt.Add(PopulateEmpruntRecord(reader));
+                }
+            }
+        }
+        _connection.Close();
+        return emprunt;
+    }
+
 
     public int Insert(Emprunt emprunt)
     {
