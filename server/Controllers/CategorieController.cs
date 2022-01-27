@@ -1,19 +1,27 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using server.Services;
 using server.Services.Interfaces;
 
 namespace server.Controllers;
 
+/// <summary>
+/// Controller des endpoints traitant des catégories de livres
+/// </summary>
 [ApiController]
 public class CategorieController : ControllerBase
 {
     private readonly ICategorieService _service;
 
+    /// <summary>
+    /// Constructeur de base
+    /// Injection d'un service sur les catégories
     public CategorieController(ICategorieService service)
     {
         _service = service;
     }
-    
+
+    /// <remarks>
+    /// Retourne toutes les catégories
+    /// </remarks>
     [Route("categories")]
     [HttpGet]
     [Produces("application/json")]
@@ -25,10 +33,13 @@ public class CategorieController : ControllerBase
             return NotFound();
 
         var stringList = list.Select(c => c.Nom);
-        
+
         return Ok(stringList);
     }
-    
+
+    /// <remarks>
+    /// Retourne une catégorie
+    /// </remarks>
     [Route("categorie/{nom}")]
     [HttpGet]
     [Produces("application/json")]
@@ -41,7 +52,10 @@ public class CategorieController : ControllerBase
 
         return Ok(categorie);
     }
-    
+
+    /// <remarks>
+    /// Crée une catégorie et retourne son nom
+    /// </remarks>
     [Route("categorie")]
     [HttpPost]
     [Produces("application/json")]
@@ -49,13 +63,16 @@ public class CategorieController : ControllerBase
     public ActionResult CreateCategorie(string nom)
     {
         var fetchedCategorie = _service.GetCategorieByNom(nom);
-        
+
         if (fetchedCategorie == null)
-            return Created("Created", new { Id = _service.Insert(nom) });
+            return Created("Created", new {Id = _service.Insert(nom)});
 
         return BadRequest("Categorie already exists");
     }
 
+    /// <remarks>
+    /// Modifie une catégorie et retourne 1 si la modification s'est effectuée
+    /// </remarks>
     [Route("categorie")]
     [HttpPut]
     [Produces("application/json")]
@@ -65,11 +82,13 @@ public class CategorieController : ControllerBase
         var fetchedCategorie = _service.GetCategorieByNom(nom);
         if (fetchedCategorie == null)
             return NotFound();
-            
-        return Accepted("Updated", new { AffectedRow = _service.Update(nom, newNom) });
-        
+
+        return Accepted("Updated", new {AffectedRow = _service.Update(nom, newNom)});
     }
-    
+
+    /// <remarks>
+    /// Supprime une catégorie et retourne 1 si la suppression s'est effectuée
+    /// </remarks>
     [Route("categorie")]
     [HttpDelete]
     [Produces("application/json")]
@@ -80,7 +99,6 @@ public class CategorieController : ControllerBase
         if (fetchedCategorie == null)
             return NotFound();
 
-        return Accepted("Deleted", new { AffectedRow = _service.Delete(nom) });
+        return Accepted("Deleted", new {AffectedRow = _service.Delete(nom)});
     }
-    
 }

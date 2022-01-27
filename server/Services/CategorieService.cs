@@ -6,20 +6,31 @@ using server.Utils;
 
 namespace server.Services;
 
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les catégories.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class CategorieService : ICategorieService
 {
     private static NpgsqlConnection _connection = new();
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public CategorieService(IOptions<DbConnection> options)
     {
         _connection =
             new NpgsqlConnection(options.Value.ConnectionString);
     }
 
+    /// <summary>
+    /// Crée un record Categorie champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static Categorie PopulateCategorieRecord(NpgsqlDataReader reader, string key = "nom")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
-        
+
         var nom = reader.GetString(reader.GetOrdinal(key));
 
         return new Categorie(nom);
@@ -41,8 +52,9 @@ public class CategorieService : ICategorieService
                 }
             }
         }
+
         _connection.Close();
-        
+
         return list;
     }
 
@@ -63,31 +75,33 @@ public class CategorieService : ICategorieService
                 }
             }
         }
+
         _connection.Close();
-        
+
         return cat;
     }
-    
+
     public string? Insert(string nomId)
     {
         string? nom;
-        
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             command.CommandText = "INSERT INTO Catégorie (nom) VALUES (@nom) returning nom";
             command.Parameters.AddWithValue("@nom", nomId);
-            nom = (string?)(command.ExecuteScalar() ?? null);
+            nom = (string?) (command.ExecuteScalar() ?? null);
         }
+
         _connection.Close();
-        
+
         return nom;
     }
-    
+
     public int Update(string nom, string newNom)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
@@ -96,15 +110,16 @@ public class CategorieService : ICategorieService
             command.Parameters.AddWithValue("@nom", nom);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
-    
+
     public int Delete(string nom)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
@@ -112,8 +127,9 @@ public class CategorieService : ICategorieService
             command.Parameters.AddWithValue("@nom", nom);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 }
