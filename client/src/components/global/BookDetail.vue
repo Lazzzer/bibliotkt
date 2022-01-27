@@ -42,10 +42,26 @@
       <p>{{ livre.prixEmprunt }} CHF</p>
     </div>
 
+    <div v-if="employeStore.isLogged" class="mb-4">
+      <h2 class="font-bold text-sky-700">Nombre total d'exemplaires:</h2>
+      <p>{{ nbExemplaires }}</p>
+    </div>
+
+
     <h1 class="mb-4 text-xl font-bold text-sky-700">Recommandations</h1>
     <BookGrid :livres="recommandations" />
-    <h1 class="mb-4 text-xl font-bold text-sky-700">Emprunts</h1>
-    <EmpruntGrid :emprunts="emprunts" />
+    
+    <div v-if="employeStore.isLogged">
+      <h1 class="mb-4 text-xl font-bold text-sky-700">Editions</h1>
+      <EditionGrid :editions="editions"/>
+    </div>
+
+    <div class="mb-20" v-if="employeStore.isLogged">
+      <h1 class="mb-4 text-xl font-bold text-sky-700">Emprunts</h1>
+      <EmpruntGrid :emprunts="emprunts" v-if="emprunts.length > 0" />
+      <h2 v-else class="italic">Pas d'emprunts</h2>
+    </div>
+
   </div>
 </template>
 
@@ -55,12 +71,15 @@ import axios from "axios";
 import { onBeforeMount, ref } from "vue";
 import { useEmployeStore } from '../../stores/employe';
 import EmpruntGrid from "./EmpruntGrid.vue";
+import EditionGrid from "./EditionGrid.vue";
 const employeStore = useEmployeStore();
 
 const livre = ref([]);
 const recommandations = ref([]);
 const editions = ref([]);
+
 const emprunts = ref([]);
+const nbExemplaires = ref(0);
 
 const props = defineProps(['issn']);
 
@@ -70,13 +89,14 @@ const fetchLivre = async () => {
     fetchRecommandations();
     fetchEditions();
     fetchEmprunts();
+    fetchNbExemplaires();
   }).catch(err => {
     console.log(err.response.data);
   })
 }
 
 const fetchEmprunts = async () => {
-  axios.get('emprunts').then(res => {
+  axios.get(`emprunts/livre/${livre.value.issn}`).then(res => {
     emprunts.value = res.data;
   }).catch(err => {
     console.log(err.response.data);
@@ -86,7 +106,7 @@ const fetchEmprunts = async () => {
 const fetchRecommandations = async () => {
 
   let queryString = "";
-  let connector = "?";
+  let connector = "&";
 
   if (livre.value.auteurs.length !== "") {
     queryString += `${connector}nomAuteur=${livre.value.auteurs[0].nom}`;
@@ -95,15 +115,13 @@ const fetchRecommandations = async () => {
 
   if (livre.value.categories.length > 0) {
     livre.value.categories.forEach(categorie => {
-      queryString += `${connector}nomCategories=${categorie}`
+      queryString += `${connector}nomCategories=${categorie.nom}`
       connector = "&";
     });
   }
 
-  axios.get(`livre/recommandations${queryString}`).then(res => {
-    console.log(res)
+  axios.get(`livre/recommandations?issn=${livre.value.issn}${queryString}`).then(res => {
     recommandations.value = res.data;
-    console.log(recommandations.value, livre.value)
   }).catch(err => {
     console.log(err.response.data);
   })
@@ -112,6 +130,14 @@ const fetchRecommandations = async () => {
 const fetchEditions = async () => {
   axios.get(`editions/${livre.value.issn}`).then(res => {
     editions.value = res.data;
+  }).catch(err => {
+    console.log(err.response.data);
+  })
+}
+
+const fetchNbExemplaires = async () => {
+  axios.get(`nbExemplaires/${livre.value.issn}`).then(res => {
+    nbExemplaires.value = res.data;
   }).catch(err => {
     console.log(err.response.data);
   })

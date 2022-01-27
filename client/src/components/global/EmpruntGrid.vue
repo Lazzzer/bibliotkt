@@ -45,8 +45,6 @@ defineProps(['emprunts'])
 const compareDates = (planned, ending) => {
   const datePlanned = new Date(planned);
 
-  console.log(Date.now() > datePlanned, ending)
-
   if (ending === null)
     return Date.now() > datePlanned;
 
