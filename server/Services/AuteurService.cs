@@ -56,12 +56,7 @@ public class AuteurService : IAuteurService
         _connection.Close();
         return list;
     }
-
-    /// <summary>
-    /// Récupère un aute
-    /// </summary>
-    /// <param name="id"></param>
-    /// <returns></returns>
+    
     public Auteur? GetAuteurById(int id)
     {
         Auteur? auteur = null;

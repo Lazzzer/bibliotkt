@@ -6,16 +6,26 @@ using server.Utils;
 
 namespace server.Services;
 
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les éditions.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class EmployeService : IEmployeService
 {
-    private static NpgsqlConnection _connection = new();
+    private static NpgsqlConnection _connection;
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public EmployeService(IOptions<DbConnection> options)
     {
-        _connection =
-            new NpgsqlConnection(options.Value.ConnectionString);
+        _connection = new NpgsqlConnection(options.Value.ConnectionString);
     }
     
+    /// <summary>
+    /// Crée un record Employe champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static Employe PopulateEmployeRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -40,30 +50,8 @@ public class EmployeService : IEmployeService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "SELECT * FROM Employé INNER JOIN Personne ON employé.idpersonne = personne.id WHERE login = @login";
+            command.CommandText = "SELECT * FROM Employé INNER JOIN Personne ON Employé.idPersonne = Personne.id WHERE login = @login";
             command.Parameters.AddWithValue("@login", login);
-
-            using (var reader = command.ExecuteReader())
-            {
-                while (reader.Read())
-                {
-                    employe = PopulateEmployeRecord(reader);
-                }
-            }
-        }
-        
-        _connection.Close();
-        return employe;
-    }
-
-    public Employe? GetEmployeById(int id)
-    {
-        Employe? employe = null;
-        _connection.Open();
-        using (var command = _connection.CreateCommand())
-        {
-            command.CommandText = "SELECT * FROM Employé WHERE id = @id";
-            command.Parameters.AddWithValue("@id", id);
 
             using (var reader = command.ExecuteReader())
             {

@@ -15,6 +15,7 @@ public class AuteurController : ControllerBase
     /// <summary>
     /// Constructeur de base
     /// Injection d'un service sur les auteurs
+    /// </summary>
     public AuteurController(IAuteurService service)
     {
         _service = service;

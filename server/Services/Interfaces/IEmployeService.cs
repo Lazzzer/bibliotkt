@@ -1,12 +1,11 @@
-﻿/**
- * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table employé
- */
-using server.Models;
+﻿using server.Models;
 
 namespace server.Services.Interfaces;
 
+/// <summary>
+/// Interface des méthodes du service pour les employés
+/// </summary>
 public interface IEmployeService
 {
     Employe? GetEmployeByLogin(string login);
-    Employe? GetEmployeById(int id);
 }

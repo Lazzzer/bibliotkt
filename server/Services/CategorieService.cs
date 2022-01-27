@@ -12,7 +12,7 @@ namespace server.Services;
 /// </summary>
 public class CategorieService : ICategorieService
 {
-    private static NpgsqlConnection _connection = new();
+    private static NpgsqlConnection _connection;
 
     /// <summary>
     /// Constructeur du service
@@ -20,8 +20,7 @@ public class CategorieService : ICategorieService
     /// </summary>
     public CategorieService(IOptions<DbConnection> options)
     {
-        _connection =
-            new NpgsqlConnection(options.Value.ConnectionString);
+        _connection = new NpgsqlConnection(options.Value.ConnectionString);
     }
 
     /// <summary>

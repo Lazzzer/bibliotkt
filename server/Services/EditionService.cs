@@ -6,16 +6,26 @@ using server.Utils;
 
 namespace server.Services;
 
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les éditions.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class EditionService : IEditionService
 {
-    private static NpgsqlConnection _connection = new();
+    private static NpgsqlConnection _connection;
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public EditionService(IOptions<DbConnection> options)
     {
-        _connection =
-            new NpgsqlConnection(options.Value.ConnectionString);
+        _connection = new NpgsqlConnection(options.Value.ConnectionString);
     }
-    
+
+    /// <summary>
+    /// Crée un record Edition champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static Edition PopulateEditionRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -26,9 +36,9 @@ public class EditionService : IEditionService
         var type = reader.GetFieldValue<TypeEdition>(reader.GetOrdinal("type"));
         var langue = reader.GetFieldValue<Langue>(reader.GetOrdinal("langue"));
 
-        return new Edition(id,issn, idMaison, type, langue, new List<Exemplaire>());
+        return new Edition(id, issn, idMaison, type, langue);
     }
-    
+
     public IList<Edition> GetEditions()
     {
         var list = new List<Edition>();
@@ -45,6 +55,7 @@ public class EditionService : IEditionService
                 }
             }
         }
+
         _connection.Close();
 
         return list;
@@ -59,13 +70,13 @@ public class EditionService : IEditionService
         {
             command.CommandText = @"SELECT
                                         *,
-                                        edition.id AS idEdition,
-                                        exemplaire.id AS idExemplaire
+                                        Edition.id AS idEdition,
+                                        Exemplaire.id AS idExemplaire
                                     FROM
                                         Edition
-                                        LEFT JOIN Exemplaire ON edition.id = exemplaire.idedition
+                                        LEFT JOIN Exemplaire ON Edition.id = Exemplaire.idEdition
                                     WHERE
-                                        edition.id = @id";
+                                        Edition.id = @id";
             command.Parameters.AddWithValue("id", id);
 
             using (var reader = command.ExecuteReader())
@@ -73,17 +84,19 @@ public class EditionService : IEditionService
                 while (reader.Read())
                 {
                     edition = PopulateEditionRecord(reader);
-                    if (!reader.IsDBNull(reader.GetOrdinal("idexemplaire")) && !exemplaires.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idexemplaire"))))
+                    if (!reader.IsDBNull(reader.GetOrdinal("idexemplaire")) &&
+                        !exemplaires.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idexemplaire"))))
                     {
                         exemplaires.Add(ExemplaireService.PopulateExemplaireRecord(reader, "idexemplaire"));
                     }
                 }
             }
         }
+
         _connection.Close();
-        if (edition != null) 
+        if (edition != null)
             return edition with {Exemplaires = exemplaires};
-            
+
         return null;
     }
 
@@ -104,6 +117,7 @@ public class EditionService : IEditionService
                 }
             }
         }
+
         _connection.Close();
 
         return list;
@@ -112,17 +126,19 @@ public class EditionService : IEditionService
     public int Insert(Edition edition)
     {
         int id;
-        
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "INSERT INTO Edition (ISSNLivre, idMaisonEdition, type, langue) VALUES (@issn, @idMaison, @type, @langue) returning id";
+            command.CommandText =
+                "INSERT INTO Edition (ISSNLivre, idMaisonEdition, type, langue) VALUES (@issn, @idMaison, @type, @langue) returning id";
             command.Parameters.AddWithValue("@issn", edition.issn);
             command.Parameters.AddWithValue("@idMaison", edition.idMaison);
             command.Parameters.AddWithValue("@type", edition.Type);
             command.Parameters.AddWithValue("@langue", edition.Langue);
-            id = (int)(command.ExecuteScalar() ?? -1);
+            id = (int) (command.ExecuteScalar() ?? -1);
         }
+
         _connection.Close();
         return id;
     }
@@ -130,11 +146,12 @@ public class EditionService : IEditionService
     public int Update(Edition edition)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = "UPDATE Edition SET ISSNLivre = @issn, idMaisonEdition = @idMaison, type = @type, langue = @langue WHERE id = @id";
+            command.CommandText =
+                "UPDATE Edition SET ISSNLivre = @issn, idMaisonEdition = @idMaison, type = @type, langue = @langue WHERE id = @id";
             command.Parameters.AddWithValue("@id", edition.Id);
             command.Parameters.AddWithValue("@issn", edition.issn);
             command.Parameters.AddWithValue("@idMaison", edition.idMaison);
@@ -142,15 +159,16 @@ public class EditionService : IEditionService
             command.Parameters.AddWithValue("@langue", edition.Langue);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 
     public int Delete(int id)
     {
         int affectedRows;
-    
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
@@ -158,8 +176,9 @@ public class EditionService : IEditionService
             command.Parameters.AddWithValue("@id", id);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
-    
+
         return affectedRows;
     }
 }

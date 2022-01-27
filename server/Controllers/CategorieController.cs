@@ -14,6 +14,7 @@ public class CategorieController : ControllerBase
     /// <summary>
     /// Constructeur de base
     /// Injection d'un service sur les catégories
+    /// </summary>
     public CategorieController(ICategorieService service)
     {
         _service = service;

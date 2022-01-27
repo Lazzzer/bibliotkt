@@ -1,19 +1,28 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using server.Services;
 using server.Services.Interfaces;
 
 namespace server.Controllers;
 
+/// <summary>
+/// Controller des endpoints traitant des employés
+/// </summary>
 [ApiController]
 public class EmployeController : ControllerBase
 {
     private readonly IEmployeService _service;
 
+    /// <summary>
+    /// Constructeur de base
+    /// Injection d'un service sur les employés
+    /// </summary>
     public EmployeController(IEmployeService service)
     {
         _service = service;
     }
     
+    /// <remarks>
+    /// Effectue une tentative de connexion. Retourne un code 200 si la tentative a réussi.
+    /// </remarks>
     [Route("employe/login")]
     [HttpPost]
     [Produces("application/json")]

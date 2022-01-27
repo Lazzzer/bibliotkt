@@ -1,10 +1,10 @@
-﻿/**
- * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table édition
- */
-using server.Models;
+﻿using server.Models;
 
 namespace server.Services.Interfaces;
 
+/// <summary>
+/// Interface des méthodes du service pour les éditions
+/// </summary>
 public interface IEditionService
 {
     IList<Edition> GetEditions();
