@@ -42,8 +42,10 @@
       <p>{{ livre.prixEmprunt }} CHF</p>
     </div>
 
-    <h1 class="mb-4 text-xl font-bold text-sky-700">Recommendations</h1>
+    <h1 class="mb-4 text-xl font-bold text-sky-700">Recommandations</h1>
     <BookGrid :livres="recommandations" />
+    <h1 class="mb-4 text-xl font-bold text-sky-700">Emprunts</h1>
+    <EmpruntGrid :emprunts="emprunts" />
   </div>
 </template>
 
@@ -52,16 +54,30 @@ import BookGrid from "./BookGrid.vue";
 import axios from "axios";
 import { onBeforeMount, ref } from "vue";
 import { useEmployeStore } from '../../stores/employe';
+import EmpruntGrid from "./EmpruntGrid.vue";
 const employeStore = useEmployeStore();
 
 const livre = ref([]);
 const recommandations = ref([]);
+const editions = ref([]);
+const emprunts = ref([]);
+
 const props = defineProps(['issn']);
 
 const fetchLivre = async () => {
   axios.get(`livre/${props.issn}`).then(res => {
     livre.value = res.data;
     fetchRecommandations();
+    fetchEditions();
+    fetchEmprunts();
+  }).catch(err => {
+    console.log(err.response.data);
+  })
+}
+
+const fetchEmprunts = async () => {
+  axios.get('emprunts').then(res => {
+    emprunts.value = res.data;
   }).catch(err => {
     console.log(err.response.data);
   })
@@ -88,6 +104,14 @@ const fetchRecommandations = async () => {
     console.log(res)
     recommandations.value = res.data;
     console.log(recommandations.value, livre.value)
+  }).catch(err => {
+    console.log(err.response.data);
+  })
+}
+
+const fetchEditions = async () => {
+  axios.get(`editions/${livre.value.issn}`).then(res => {
+    editions.value = res.data;
   }).catch(err => {
     console.log(err.response.data);
   })
