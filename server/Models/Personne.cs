@@ -1,3 +1,7 @@
 ﻿namespace server.Models;
 
-public abstract record Personne(int Id, string Nom, string Prenom, string Rue, int NoRue, int Npa, string Localite, DateOnly DateCreationCompte);
+/// <summary>
+/// Record représentant une personne
+/// </summary>
+public abstract record Personne(int Id, string Nom, string Prenom, string Rue, int NoRue, int Npa, string Localite,
+    DateOnly DateCreationCompte);

@@ -1,10 +1,10 @@
-﻿/**
- * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table membre
- */
-using server.Models;
+﻿using server.Models;
 
 namespace server.Services.Interfaces;
 
+/// <summary>
+/// Interface des méthodes du service pour les membres
+/// </summary>
 public interface IMembreService
 {
     IList<Membre> GetMembres();

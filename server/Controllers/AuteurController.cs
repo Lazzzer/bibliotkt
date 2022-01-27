@@ -37,8 +37,7 @@ public class AuteurController : ControllerBase
 
         return Ok(list);
     }
-
-
+    
     /// <remarks>
     /// Retourne un auteur avec ses livres
     /// </remarks>
