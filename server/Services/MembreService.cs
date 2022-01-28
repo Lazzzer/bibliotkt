@@ -12,7 +12,7 @@ namespace server.Services;
 /// </summary>
 public class MembreService : IMembreService
 {
-    private static NpgsqlConnection _connection;
+    private static NpgsqlConnection _connection = new();
 
     /// <summary>
     /// Constructeur du service
@@ -105,8 +105,6 @@ public class MembreService : IMembreService
         var id = InsertPersonne(membre);
         if (id == -1)
             return 0;
-
-        int idMembre;
 
         _connection.Open();
         using (var command = _connection.CreateCommand())

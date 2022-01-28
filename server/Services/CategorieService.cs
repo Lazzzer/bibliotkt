@@ -12,7 +12,7 @@ namespace server.Services;
 /// </summary>
 public class CategorieService : ICategorieService
 {
-    private static NpgsqlConnection _connection;
+    private static NpgsqlConnection _connection = new();
 
     /// <summary>
     /// Constructeur du service
