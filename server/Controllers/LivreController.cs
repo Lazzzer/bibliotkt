@@ -1,20 +1,29 @@
 using Microsoft.AspNetCore.Mvc;
 using server.Models;
-using server.Services;
 using server.Services.Interfaces;
 
 namespace server.Controllers;
 
+/// <summary>
+/// Controller des endpoints traitant des livres
+/// </summary>
 [ApiController]
 public class LivreController : ControllerBase
 {
     private readonly ILivreService _service;
     
+    /// <summary>
+    /// Constructeur de base
+    /// Injection d'un service sur les livres
+    /// </summary>
     public LivreController(ILivreService service)
     {
         _service = service;
     }
 
+    /// <remarks>
+    /// Retourne tous les livres
+    /// </remarks>
     [Route("livres")]
     [HttpGet]
     [Produces("application/json")]
@@ -28,6 +37,9 @@ public class LivreController : ControllerBase
         return Ok(list);
     }
 
+    /// <remarks>
+    /// Retourne un livre avec ses auteurs, ses catégories et ses éditions via son Issn
+    /// </remarks>
     [Route("livre/{issn:int}")]
     [HttpGet]
     [Produces("application/json")]
@@ -41,6 +53,9 @@ public class LivreController : ControllerBase
         return Ok(livre);
     }
     
+    /// <remarks>
+    /// Retourne tous les livres correspondant au titre transmis
+    /// </remarks>
     [Route("livresByTitle")]
     [HttpGet]
     [Produces("application/json")]
@@ -54,6 +69,10 @@ public class LivreController : ControllerBase
         return Ok(list);
     }
     
+    /// <remarks>
+    /// Retourne tous les livres correspondant aux filtres transmis.
+    /// Possibilité de filtrer par nom d'auteur, par langue et par catégories
+    /// </remarks>
     [Route("livresByFilters")]
     [HttpGet]
     [Produces("application/json")]
@@ -67,6 +86,10 @@ public class LivreController : ControllerBase
         return Ok(list);
     }
     
+    /// <remarks>
+    /// Retourne tous les livres recommandés pour un livre donné.
+    /// La recommandation retourne des livres du même auteur et des mêmes catégories.
+    /// </remarks>
     [Route("/livre/recommandations")]
     [HttpGet]
     [Produces("application/json")]
@@ -84,6 +107,34 @@ public class LivreController : ControllerBase
         return Ok(list);
     }
     
+    /// <remarks>
+    /// Crée un livre et retourne son issn
+    ///
+    ///     POST /livre
+    /// 
+    ///     {
+    ///         "issn": 12345699,
+    ///         "titre": "L'Homme qui rit",
+    ///         "synopsis": "Ursus et Homo voyagent à travers l’Angleterre en traînant une cahute, dont Ursus se sert pour haranguer les foules et vendre des potions.",
+    ///         "dateParution": "1869-04-01",
+    ///         "dateAcquisition": "2022-01-27",
+    ///         "prixAchat": 10,
+    ///         "prixEmprunt": 4,
+    ///         "auteurs": [
+    ///              {
+    ///                  "id": 5,
+    ///                  "nom": "Hugo",
+    ///                  "prenom": "Victor"
+    ///              }
+    ///         ],
+    ///         "categories": [
+    ///              {
+    ///                  "nom": "Aventure"
+    ///              }
+    ///         ]
+    ///     }
+    ///
+    /// </remarks>
     [Route("livre")]
     [HttpPost]
     [Produces("application/json")]
@@ -93,6 +144,22 @@ public class LivreController : ControllerBase
         return Created("Created", new { Issn = _service.Insert(livre) });
     }
 
+    /// <remarks>
+    /// Modifie un livre et retourne 1 si la modification s'est effectuée
+    ///
+    ///     PUT /livre
+    /// 
+    ///     {
+    ///         "issn": 12345699,
+    ///         "titre": "L'Homme qui rit",
+    ///         "synopsis": "Ursus et Homo voyagent à travers l’Angleterre en traînant une cahute, dont Ursus se sert pour haranguer les foules et vendre des potions.",
+    ///         "dateParution": "1869-04-01",
+    ///         "dateAcquisition": "2022-01-27",
+    ///         "prixAchat": 10,
+    ///         "prixEmprunt": 7
+    ///     }
+    ///
+    /// </remarks>
     [Route("livre")]
     [HttpPut]
     [Produces("application/json")]
@@ -106,6 +173,9 @@ public class LivreController : ControllerBase
         return Accepted("Updated", new { AffectedRow = _service.Update(livre) });
     }
     
+    /// <remarks>
+    /// Supprime un livre et retourne 1 si la suppression s'est effectuée
+    /// </remarks>
     [Route("livre")]
     [HttpDelete]
     [Produces("application/json")]

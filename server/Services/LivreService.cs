@@ -1,5 +1,4 @@
-﻿using System.Data;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using Npgsql;
 using server.Models;
 using server.Services.Interfaces;
@@ -7,16 +6,26 @@ using server.Utils;
 
 namespace server.Services;
 
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les livres.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class LivreService : ILivreService
 {
-    private static NpgsqlConnection _connection = new();
+    private static NpgsqlConnection _connection;
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public LivreService(IOptions<DbConnection> options)
     {
-        _connection =
-            new NpgsqlConnection(options.Value.ConnectionString);
+        _connection = new NpgsqlConnection(options.Value.ConnectionString);
     }
 
+    /// <summary>
+    /// Crée un record Livre champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static Livre PopulateLivreRecord(NpgsqlDataReader reader, string key = "issn")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -29,8 +38,7 @@ public class LivreService : ILivreService
         var prixAchat = reader.GetInt32(reader.GetOrdinal("prixAchat"));
         var prixEmprunt = reader.GetInt32(reader.GetOrdinal("prixEmprunt"));
 
-        return new Livre(issn, titre, synospis, dateParution, dateAcquisition, prixAchat, prixEmprunt,
-            new List<Auteur>(), new List<Categorie>(), new List<Edition>());
+        return new Livre(issn, titre, synospis, dateParution, dateAcquisition, prixAchat, prixEmprunt);
     }
 
     public IList<Livre> GetLivres()
@@ -49,6 +57,7 @@ public class LivreService : ILivreService
                 }
             }
         }
+
         _connection.Close();
         return list;
     }
@@ -64,33 +73,32 @@ public class LivreService : ILivreService
         using (var command = _connection.CreateCommand())
         {
             command.CommandText =
-            @"SELECT
+                @"SELECT
                     issn,
                     titre,
                     synopsis,
-                    dateparution,
-                    dateacquisition,
-                    prixachat,
-                    prixemprunt,
-                    idauteur,
-                    auteur.nom,
+                    dateParution,
+                    dateAcquisition,
+                    prixAchat,
+                    prixEmprunt,
+                    idAuteur,
+                    Auteur.nom,
                     prénom,
                     nomCatégorie,
-                    edition.id AS idEdition,
-                    edition.issnlivre,
-                    idmaisonedition,
+                    Edition.id AS idEdition,
+                    Edition.issnLivre,
+                    idMaisonEdition,
                     type,
                     langue
                 FROM
                     Livre
-                    LEFT JOIN Livre_Auteur ON Livre.issn = Livre_Auteur.issnlivre
+                    LEFT JOIN Livre_Auteur ON Livre.issn = Livre_Auteur.issnLivre
                     LEFT JOIN Auteur ON Livre_Auteur.idAuteur = Auteur.id
                     LEFT JOIN Livre_Catégorie ON Livre.issn = Livre_Catégorie.issnLivre
                     LEFT JOIN Catégorie ON Livre_Catégorie.nomCatégorie = Catégorie.nom
                     LEFT JOIN edition ON Edition.issnLivre = Livre.issn
-                WHERE
-                    Livre.issn = @issn";
-            
+                WHERE Livre.issn = @issn";
+
             command.Parameters.AddWithValue("issn", issn);
 
             using (var reader = command.ExecuteReader())
@@ -98,27 +106,31 @@ public class LivreService : ILivreService
                 while (reader.Read())
                 {
                     livre = PopulateLivreRecord(reader);
-                    if (!reader.IsDBNull(reader.GetOrdinal("idauteur")) && !auteurs.Exists(a => a.Id == reader.GetInt32(reader.GetOrdinal("idauteur"))))
+                    if (!reader.IsDBNull(reader.GetOrdinal("idauteur")) &&
+                        !auteurs.Exists(a => a.Id == reader.GetInt32(reader.GetOrdinal("idauteur"))))
                     {
                         auteurs.Add(AuteurService.PopulateAuteurRecord(reader, "idauteur"));
                     }
 
-                    if (!reader.IsDBNull(reader.GetOrdinal("nomcatégorie")) && !categories.Exists(c => c.Nom == reader.GetString(reader.GetOrdinal("nomcatégorie"))))
+                    if (!reader.IsDBNull(reader.GetOrdinal("nomcatégorie")) && !categories.Exists(c =>
+                            c.Nom == reader.GetString(reader.GetOrdinal("nomcatégorie"))))
                     {
                         categories.Add(CategorieService.PopulateCategorieRecord(reader, "nomcatégorie"));
                     }
-                    
-                    if (!reader.IsDBNull(reader.GetOrdinal("idedition")) && !editions.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idedition"))))
+
+                    if (!reader.IsDBNull(reader.GetOrdinal("idedition")) &&
+                        !editions.Exists(e => e.Id == reader.GetInt32(reader.GetOrdinal("idedition"))))
                     {
                         editions.Add(EditionService.PopulateEditionRecord(reader, "idedition"));
                     }
                 }
             }
         }
+
         _connection.Close();
-        if (livre != null) 
+        if (livre != null)
             return livre with {Auteurs = auteurs, Categories = categories, Editions = editions};
-            
+
         return null;
     }
 
@@ -139,6 +151,7 @@ public class LivreService : ILivreService
                 }
             }
         }
+
         _connection.Close();
         return list;
     }
@@ -149,16 +162,17 @@ public class LivreService : ILivreService
         var joins = "";
         var where = "";
         var logicalOperator = interesct ? " AND " : " OR ";
-        
+
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
             if (nomAuteur != null)
             {
-                joins += " INNER JOIN Livre_Auteur ON Livre_Auteur.issnLivre = Livre.issn INNER JOIN Auteur ON Livre_auteur.idauteur = auteur.id";
-                
+                joins +=
+                    " INNER JOIN Livre_Auteur ON Livre_Auteur.issnLivre = Livre.issn INNER JOIN Auteur ON Livre_auteur.idauteur = auteur.id";
+
                 where += where == "" ? "WHERE " : logicalOperator;
-                string[] nomPrenom = nomAuteur.Split(" ");
+                var nomPrenom = nomAuteur.Split(" ");
                 if (nomPrenom.Length == 2)
                 {
                     where += "(auteur.nom ILIKE @nomAuteur AND auteur.prénom ILIKE @prenomAuteur)";
@@ -175,7 +189,7 @@ public class LivreService : ILivreService
             if (langue != null)
             {
                 joins += " INNER JOIN edition ON edition.issnlivre = livre.issn";
-                
+
                 where += where == "" ? "WHERE " : logicalOperator;
                 where += "edition.langue = @langue";
                 command.Parameters.AddWithValue("@langue", langue.Value);
@@ -185,7 +199,7 @@ public class LivreService : ILivreService
             {
                 joins +=
                     " INNER JOIN livre_catégorie ON livre_catégorie.issnlivre = Livre.issn INNER JOIN catégorie ON livre_catégorie.nomcatégorie = catégorie.nom";
-                
+
                 where += where == "" ? "WHERE " : logicalOperator;
                 where += "(";
                 for (var i = 0; i < nomCategories.Length; ++i)
@@ -201,7 +215,9 @@ public class LivreService : ILivreService
                 where += ")";
             }
 
-            var query = "SELECT DISTINCT issn, titre, synopsis, dateparution, dateacquisition, prixachat, prixemprunt FROM Livre " + joins + " " + where;
+            var query =
+                "SELECT DISTINCT issn, titre, synopsis, dateparution, dateacquisition, prixachat, prixemprunt FROM Livre " +
+                joins + " " + where;
 
             command.CommandText = query;
 
@@ -213,6 +229,7 @@ public class LivreService : ILivreService
                 }
             }
         }
+
         _connection.Close();
         return list;
     }
@@ -223,9 +240,10 @@ public class LivreService : ILivreService
         _connection.Open();
         using (var command = _connection.CreateCommand())
         {
-            command.CommandText = @"INSERT INTO Livre (issn, titre, synopsis, dateParution, dateAcquisition, prixAchat, prixEmprunt)
+            command.CommandText =
+                @"INSERT INTO Livre (issn, titre, synopsis, dateParution, dateAcquisition, prixAchat, prixEmprunt)
             VALUES (@issn, @titre, @synopsis, @parution, @acquisition, @achat, @emprunt) returning issn";
-            
+
             command.Parameters.AddWithValue("@issn", livre.Issn);
             command.Parameters.AddWithValue("@titre", livre.Titre);
             command.Parameters.AddWithValue("@synopsis", livre.Synopsis);
@@ -233,18 +251,26 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@acquisition", livre.DateAcquisition);
             command.Parameters.AddWithValue("@achat", livre.PrixAchat);
             command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
-            id = (int)(command.ExecuteScalar() ?? -1);
+            id = (int) (command.ExecuteScalar() ?? -1);
             _connection.Close();
 
-            foreach (var a in livre.Auteurs)
+            if (livre.Auteurs != null)
             {
-                InsertLivreAuteur(a.Id, id);
+                foreach (var a in livre.Auteurs)
+                {
+                    InsertLivreAuteur(a.Id, id);
+                }
             }
-            foreach (var c in livre.Categories)
+
+            if (livre.Categories != null)
             {
-                InsertLivreCat(c.Nom, id);
+                foreach (var c in livre.Categories)
+                {
+                    InsertLivreCat(c.Nom, id);
+                }
             }
         }
+
         return id;
     }
 
@@ -259,9 +285,9 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@cat", nomCat);
             command.ExecuteScalar();
         }
+
         _connection.Close();
     }
-
     private void InsertLivreAuteur(int idAuteur, int issnLivre)
     {
         _connection.Open();
@@ -273,6 +299,7 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@idAuteur", idAuteur);
             command.ExecuteScalar();
         }
+
         _connection.Close();
     }
 
@@ -285,7 +312,7 @@ public class LivreService : ILivreService
             command.CommandText = @"UPDATE Livre 
             SET titre = @titre, synopsis = @synopsis, dateParution = @parution, dateAcquisition = @acquisition, 
                 prixAchat = @achat, prixEmprunt = @emprunt WHERE issn = @issn";
-            
+
             command.Parameters.AddWithValue("@issn", livre.Issn);
             command.Parameters.AddWithValue("@titre", livre.Titre);
             command.Parameters.AddWithValue("@synopsis", livre.Synopsis);
@@ -295,6 +322,7 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@emprunt", livre.PrixEmprunt);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
         return affectedRows;
     }
@@ -309,6 +337,7 @@ public class LivreService : ILivreService
             command.Parameters.AddWithValue("@id", id);
             affectedRows = command.ExecuteNonQuery();
         }
+
         _connection.Close();
         return affectedRows;
     }
