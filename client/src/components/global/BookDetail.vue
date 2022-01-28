@@ -91,7 +91,7 @@ const fetchLivre = async () => {
     fetchEmprunts();
     fetchNbExemplaires();
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -99,7 +99,7 @@ const fetchEmprunts = async () => {
   axios.get(`emprunts/livre/${livre.value.issn}`).then(res => {
     emprunts.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -123,7 +123,7 @@ const fetchRecommandations = async () => {
   axios.get(`livre/recommandations?issn=${livre.value.issn}${queryString}`).then(res => {
     recommandations.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -131,7 +131,7 @@ const fetchEditions = async () => {
   axios.get(`editions/${livre.value.issn}`).then(res => {
     editions.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -139,7 +139,7 @@ const fetchNbExemplaires = async () => {
   axios.get(`nbExemplaires/${livre.value.issn}`).then(res => {
     nbExemplaires.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 

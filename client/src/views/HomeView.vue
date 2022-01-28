@@ -19,7 +19,7 @@ const fetchLivres = async () => {
   axios.get('livres').then(res => {
     livres.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 

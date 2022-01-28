@@ -70,12 +70,11 @@ const fetchLivresWithFilters = async () => {
       connector = "&";
     });
   }
-  console.log(queryString)
   axios.get('livresByFilters' + queryString).then(res => {
     livres.value = res.data;
     fetchErr.value = false;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
     if (err.response.data.status === 404 || err.response.data.status === 400) {
       fetchErr.value = true;
     }
@@ -114,7 +113,7 @@ const fetchCategories = async () => {
   axios.get('categories').then(res => {
     categories.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 

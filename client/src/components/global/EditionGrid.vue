@@ -68,7 +68,7 @@ const fetchMaisonsEditions = async () => {
   axios.get('maisonsEdition').then(res => {
     maisons.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 

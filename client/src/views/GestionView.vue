@@ -85,7 +85,7 @@ const fetchLivres = async () => {
   axios.get('livres').then(res => {
     livres.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -93,7 +93,7 @@ const fetchMembres = async () => {
   axios.get('membres').then(res => {
     membres.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -101,7 +101,7 @@ const fetchCat = async () => {
   axios.get('categories').then(res => {
     categories.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -109,7 +109,7 @@ const fetchEmprunts = async () => {
   axios.get('emprunts').then(res => {
     emprunts.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -117,7 +117,7 @@ const fetchMaisonsEditions = async () => {
   axios.get('maisonsEdition').then(res => {
     maisons.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -125,7 +125,7 @@ const fetchAuteurs = async () => {
   axios.get('auteurs').then(res => {
     auteurs.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 

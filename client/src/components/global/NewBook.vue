@@ -35,7 +35,7 @@ const fetchCategories = async () => {
   axios.get('categories').then(res => {
     categories.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 
@@ -43,7 +43,7 @@ const fetchAuteurs = async () => {
   axios.get('auteurs').then(res => {
     auteurs.value = res.data;
   }).catch(err => {
-    console.log(err.response.data);
+    console.log(err.response.data.status);
   })
 }
 

@@ -63,7 +63,7 @@ const tryLogin = async () => {
     employeStore.connect();
     router.push('/');
   }).catch(err => {
-    console.log(err)
+    console.log(err.response.data.status)
     failed.value = true;
   })
 }
