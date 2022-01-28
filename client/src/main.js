@@ -17,7 +17,7 @@ app.use(router)
 app.use(head)
 
 axios.defaults.headers.common['Content-Type'] = 'application/json'
-axios.defaults.baseURL = "https://localhost:7020/"
+axios.defaults.baseURL = "http://localhost:5000/"
 
 app.use(VueAxios, axios)
 app.provide('axios', app.config.globalProperties.axios)

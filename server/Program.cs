@@ -56,16 +56,10 @@ builder.Services.AddScoped<IExemplaireService, ExemplaireService>();
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (app.Environment.IsDevelopment())
-{
-  app.UseSwagger();
-  app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseCors();
-
-app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
