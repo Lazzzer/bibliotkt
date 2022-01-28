@@ -1,10 +1,10 @@
-﻿/**
- * Mets à disposition les méthodes permettant de faire des requêtes sql à la base concernant la table exemplaire
- */
-using server.Models;
+﻿using server.Models;
 
 namespace server.Services.Interfaces;
 
+/// <summary>
+/// Interface des méthodes du service pour les exemplaires
+/// </summary>
 public interface IExemplaireService
 {
     IList<Exemplaire> GetExemplaires();
@@ -12,6 +12,5 @@ public interface IExemplaireService
     List<Exemplaire> GetExemplairesByIssn(int issn);
     int GetNbExemplaires(int issn);
     int Insert(Exemplaire exemplaire);
-    int Update(Exemplaire exemplaire);
     int Delete(int id);
 }

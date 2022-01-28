@@ -6,16 +6,27 @@ using server.Utils;
 
 namespace server.Services;
 
+/// <summary>
+/// Implémentation d'un service récupérant des données sur les exemplaires.
+/// La connexion à la base de donnée est ouverte et fermée à chaque requête
+/// </summary>
 public class ExemplaireService : IExemplaireService
 {
     private static NpgsqlConnection _connection = new();
 
+    /// <summary>
+    /// Constructeur du service
+    /// La connection string de la base de données est transmise par injection de dépendances
+    /// </summary>
     public ExemplaireService(IOptions<DbConnection> options)
     {
         _connection =
             new NpgsqlConnection(options.Value.ConnectionString);
     }
 
+    /// <summary>
+    /// Crée un record Exemplaire champs par champs depuis un reader obtenu d'une commande à la base de données
+    /// </summary>
     public static Exemplaire PopulateExemplaireRecord(NpgsqlDataReader reader, string key = "id")
     {
         if (reader == null) throw new ArgumentNullException(nameof(reader));
@@ -125,23 +136,6 @@ public class ExemplaireService : IExemplaireService
         }
         _connection.Close();
         return id;
-    }
-
-    public int Update(Exemplaire exemplaire)
-    {
-        int affectedRows;
-    
-        _connection.Open();
-        using (var command = _connection.CreateCommand())
-        {
-            command.CommandText = @"UPDATE Exemplaire SET issnLivre = @issnLivre, idEdition = @idEdition";
-            command.Parameters.AddWithValue("@issnLivre", exemplaire.issnLivre);
-            command.Parameters.AddWithValue("@idEdition", exemplaire.idEdition);
-            affectedRows = command.ExecuteNonQuery();
-        }
-        _connection.Close();
-    
-        return affectedRows;
     }
 
     public int Delete(int id)
