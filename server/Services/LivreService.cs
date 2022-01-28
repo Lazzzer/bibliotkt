@@ -158,8 +158,18 @@ public class LivreService : ILivreService
                 joins += " INNER JOIN Livre_Auteur ON Livre_Auteur.issnLivre = Livre.issn INNER JOIN Auteur ON Livre_auteur.idauteur = auteur.id";
                 
                 where += where == "" ? "WHERE " : logicalOperator;
-                where += "(auteur.nom ILIKE @nomAuteur OR auteur.prénom ILIKE @nomAuteur)";
-                command.Parameters.AddWithValue("@nomAuteur", "%" + nomAuteur.Trim() + "%");
+                string[] nomPrenom = nomAuteur.Split(" ");
+                if (nomPrenom.Length == 2)
+                {
+                    where += "(auteur.nom ILIKE @nomAuteur AND auteur.prénom ILIKE @prenomAuteur)";
+                    command.Parameters.AddWithValue("@nomAuteur", "%" + nomPrenom[1] + "%");
+                    command.Parameters.AddWithValue("@prenomAuteur", "%" + nomPrenom[0] + "%");
+                }
+                else
+                {
+                    where += "(auteur.nom ILIKE @nomAuteur OR auteur.prénom ILIKE @nomAuteur)";
+                    command.Parameters.AddWithValue("@nomAuteur", "%" + nomAuteur.Split(" ")[0] + "%");
+                }
             }
 
             if (langue != null)
