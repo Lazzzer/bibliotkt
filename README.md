@@ -74,4 +74,4 @@ Depuis un terminal, se rendre à la racine du dossier `client` et lancer la comm
 ```
 
 Le site est maintenant disponible sur l'url http://localhost:3000
-![fronted](images/swagger.jpg)
+![fronted](images/frontend.jpg)
